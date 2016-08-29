@@ -5,7 +5,7 @@
 
 Name:           koji-helpers
 Version:        0.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 
 # {{{1 package meta-data
 Summary:        Supplementary tools to help in a Koji deployment
@@ -96,6 +96,9 @@ exit 0
 
 # {{{1 changelog
 %changelog
+* Mon Aug 29 2016 John Florian <jflorian@doubledog.org> 0.1.0-2
+- Bug - missing Makefile for KojiGitReleaser (jflorian@doubledog.org)
+
 * Mon Aug 29 2016 John Florian <jflorian@doubledog.org> 0.1.0-1
 - new package built with tito
 
