@@ -4,7 +4,7 @@
 %global repomgr_group repomgr
 
 Name:           koji-helpers
-Version:        0.0.0
+Version:        0.1.0
 Release:        1%{?dist}
 
 # {{{1 package meta-data
@@ -96,3 +96,9 @@ exit 0
 
 # {{{1 changelog
 %changelog
+* Mon Aug 29 2016 John Florian <jflorian@doubledog.org> 0.1.0-1
+- new package built with tito
+
+* Mon Aug 29 2016 John Florian <jflorian@doubledog.org>
+- new package built with tito
+
