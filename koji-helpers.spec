@@ -53,7 +53,7 @@ install -Dp -m 0644 lib/systemd/regen-repos.service %{buildroot}%{_unitdir}/rege
 install -Dp -m 0755 bin/regen-repos                 %{buildroot}%{_bindir}/regen-repos
 install -Dp -m 0755 libexec/_shared                 %{buildroot}%{_libexecdir}/%{name}/_shared
 
-install -d -m 0755 %{buildroot}%{_var}/lib/%{name}
+install -d -m 0755 %{buildroot}%{_var}/lib/%{name}/regen-repos
 
 # {{{1 clean
 %clean
@@ -92,7 +92,7 @@ exit 0
 
 %defattr(-,%{repomgr_user},%{repomgr_group},-)
 
-%{_var}/lib/%{name}
+%{_var}/lib/%{name}/regen-repos
 
 # {{{1 changelog
 %changelog

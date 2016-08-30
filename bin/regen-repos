@@ -32,7 +32,7 @@ source '/usr/libexec/koji-helpers/_shared'
 # Other constants.
 DELIM=' '
 REPOS_CONF='/etc/koji-helpers/repos.conf'
-STATE_DIR='/var/lib/regen-repos'
+STATE_DIR='/var/lib/koji-helpers/regen-repos'
 
 
 checksum_of() {
