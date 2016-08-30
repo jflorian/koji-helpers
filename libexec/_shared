@@ -29,9 +29,9 @@ DEBUG=7
 
 
 say() {
-    # Output a message with a priority prefix recognized by systemd-cat.
+    # Output a message with a priority prefix recognized by systemd-journald.
     local level=$1; shift
-    printf '<%s>%s\n' $level "$@"
+    printf '<%s>%s\n' "$level" "$@"
 }
 
 crit() {
@@ -62,5 +62,5 @@ config_lines() {
     # than whitespace.  In other words, the actual active configuration
     # content.
     local config="$1"
-    grep -Ev '^[[:space:]]*#|^[[:space:]]*$' $config
+    grep -Ev '^[[:space:]]*#|^[[:space:]]*$' "$config"
 }

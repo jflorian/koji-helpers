@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License along with
 # koji-helpers.  If not, see <http://www.gnu.org/licenses/>.
 
-SELF=$(basename $0)
+SELF=$(basename "$0")
 
 # Set defaults.
 REST_SECS=1800
@@ -40,7 +40,7 @@ checksum_of() {
     # directory structure such that iff the contents change in any way, so
     # does the returned checksum.
     local target="${EXT_REPO_ROOT}/$1"
-    [ -d $target ] \
+    [ -d "$target" ] \
         || fail "cannot checksum non-existent directory '${target}'."
     find -L "$target" -ls | md5sum | cut -f1 -d' '
 }
@@ -51,7 +51,7 @@ load_state() {
     local tag="$1"
     local dir="$2"
     local state="${STATE_DIR}/${tag}"
-    [ -e $state ] && grep "||${dir}||" $state | cut -f2 -d"$DELIM"
+    [ -e "$state" ] && grep "||${dir}||" "$state" | cut -f2 -d"$DELIM"
 }
 
 save_state() {
@@ -60,33 +60,34 @@ save_state() {
     local tag="$1"
     local dir="$2"
     local sum="$3"
-    local tmp=$(mktemp -t "${SELF}-XXXX")
-    local state="${STATE_DIR}/${tag}"
-    [ -e $state ] && grep -v "||${dir}||" $state > $tmp
-    printf "||%s||${DELIM}%s\n" $dir $sum >> $tmp
-    mv $tmp $state
+    local tmp state
+    tmp=$(mktemp -t "${SELF}-XXXX") || fail 'Cannot create tmp directory.'
+    state="${STATE_DIR}/${tag}"
+    [ -e "$state" ] && grep -v "||${dir}||" "$state" > "$tmp"
+    printf "||%s||${DELIM}%s\n" "$dir" "$sum" >> "$tmp"
+    mv "$tmp" "$state"
 }
 
 regen_all_repositories() {
     # Iterate over each listed buildroot dependency configuration and
     # regenerate the Koji repositories for them.
-    local dependency ext_repo
+    local dependency ext_repo new_chksum old_chksum
     info 'Started regeneration of all repositories with mutated external dependencies.'
     config_lines $REPOS_CONF | while IFS=: read -a dependency
     do
         local tag=${dependency[0]}
         local triggers=0
         info "Checking dependencies for '${tag}'."
-        for ext_repo in ${dependency[@]:1}
+        for ext_repo in "${dependency[@]:1}"
         do
-            local new_chksum=$(checksum_of "$ext_repo")
-            local old_chksum=$(load_state "$tag" "$ext_repo")
+            new_chksum=$(checksum_of "$ext_repo")
+            old_chksum=$(load_state "$tag" "$ext_repo")
             info "'${ext_repo}' checksum '${old_chksum}' => '${new_chksum}'"
-            if [[ $old_chksum != $new_chksum ]]
+            if [[ "$old_chksum" != "$new_chksum" ]]
             then
                 let triggers+=1
                 info "'${tag}' has changed dependency '${ext_repo}'."
-                save_state "$tag" "$ext_repo" $new_chksum
+                save_state "$tag" "$ext_repo" "$new_chksum"
             fi
         done
         if [ $triggers -gt 0 ]
