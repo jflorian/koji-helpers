@@ -1,0 +1,11 @@
+[Unit]
+Description=Mash Koji builds into usable package repositories
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/mash-everything
+Type=simple
+User=repomgr
+
+[Install]
+WantedBy=multi-user.target
