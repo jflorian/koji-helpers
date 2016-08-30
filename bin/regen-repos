@@ -72,21 +72,21 @@ regen_all_repositories() {
     # Iterate over each listed buildroot dependency configuration and
     # regenerate the Koji repositories for them.
     local dependency ext_repo new_chksum old_chksum
-    info 'Started regeneration of all repositories with mutated external dependencies.'
+    debug 'Started regeneration of all repositories with mutated external dependencies.'
     config_lines $REPOS_CONF | while IFS=: read -a dependency
     do
         local tag=${dependency[0]}
         local triggers=0
-        info "Checking dependencies for '${tag}'."
+        debug "Checking dependencies for '${tag}'."
         for ext_repo in "${dependency[@]:1}"
         do
             new_chksum=$(checksum_of "$ext_repo")
             old_chksum=$(load_state "$tag" "$ext_repo")
-            info "'${ext_repo}' checksum '${old_chksum}' => '${new_chksum}'"
+            debug "'${ext_repo}' checksum '${old_chksum}' => '${new_chksum}'"
             if [[ "$old_chksum" != "$new_chksum" ]]
             then
                 let triggers+=1
-                info "'${tag}' has changed dependency '${ext_repo}'."
+                debug "'${tag}' has changed dependency '${ext_repo}'."
                 save_state "$tag" "$ext_repo" "$new_chksum"
             fi
         done
@@ -97,14 +97,14 @@ regen_all_repositories() {
                 || fail "Could not execute: koji regen-repo '${tag}'"
             if [ $WAIT_REPO -gt 0 ]
             then
-                info "Waiting up to ${WAIT_REPO} minutes for regeneration of '${tag}'."
+                debug "Waiting up to ${WAIT_REPO} minutes for regeneration of '${tag}'."
                 koji wait-repo --timeout=$WAIT_REPO "$tag" \
                     || fail "Could not execute: koji wait-repo '${tag}'"
             fi
 
         fi
     done
-    info 'Finished regeneration of all repositories with mutated external dependencies.'
+    debug 'Finished regeneration of all repositories with mutated external dependencies.'
 }
 
 main() {
@@ -113,7 +113,7 @@ main() {
     while :
     do
         regen_all_repositories
-        info "Resting for ${REST_SECS} seconds."
+        debug "Resting for ${REST_SECS} seconds."
         sleep $REST_SECS
     done
 }

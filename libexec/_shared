@@ -44,9 +44,24 @@ err() {
     say $ERR "$@"
 }
 
+warning() {
+    # Convenience function for say() at the WARNING priority level.
+    say $WARNING "$@"
+}
+
+notice() {
+    # Convenience function for say() at the NOTICE priority level.
+    say $NOTICE "$@"
+}
+
 info() {
     # Convenience function for say() at the INFORMATION priority level.
     say $INFO "$@"
+}
+
+debug() {
+    # Convenience function for say() at the DEBUG priority level.
+    say $DEBUG "$@"
 }
 
 fail() {
