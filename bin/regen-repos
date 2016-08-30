@@ -36,13 +36,14 @@ STATE_DIR='/var/lib/koji-helpers/regen-repos'
 
 
 checksum_of() {
-    # Return a message digest checksum for a recursive "view" of some target
-    # directory structure such that iff the contents change in any way, so
-    # does the returned checksum.
+    # Return a message digest checksum for a recursive "view" of package
+    # repository data of some target directory structure such that iff the
+    # contents change in any way, so does the returned checksum.
     local target="${EXT_REPO_ROOT}/$1"
     [ -d "$target" ] \
         || fail "cannot checksum non-existent directory '${target}'."
-    find -L "$target" -ls | md5sum | cut -f1 -d' '
+    find -L "$target" -path '*/repodata/*' -type f \
+        | xargs md5sum | md5sum | cut -f1 -d' '
 }
 
 load_state() {
