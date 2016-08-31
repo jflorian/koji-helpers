@@ -4,8 +4,8 @@
 %global repomgr_group repomgr
 
 Name:           koji-helpers
-Version:        0.1.0
-Release:        2%{?dist}
+Version:        0.2.0
+Release:        1%{?dist}
 
 # {{{1 package meta-data
 Summary:        Supplementary tools to help in a Koji deployment
@@ -116,6 +116,15 @@ exit 0
 
 # {{{1 changelog
 %changelog
+* Wed Aug 31 2016 John Florian <jflorian@doubledog.org> 0.2.0-1
+- New - mash-everything tool/service (jflorian@doubledog.org)
+- Bug - inaccurate comment (jflorian@doubledog.org)
+- Change - regen-repos checksum_of() implementation (jflorian@doubledog.org)
+- Bug - regen-repos saving state in wrong directory (jflorian@doubledog.org)
+- Change - logging priority levels to be more appropriate
+  (jflorian@doubledog.org)
+- Change - resolve a number of shellcheck warnings (jflorian@doubledog.org)
+
 * Mon Aug 29 2016 John Florian <jflorian@doubledog.org> 0.1.0-2
 - Bug - missing Makefile for KojiGitReleaser (jflorian@doubledog.org)
 
