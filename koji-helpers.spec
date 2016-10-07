@@ -1,7 +1,9 @@
 # vim: foldmethod=marker
 
-%global repomgr_user repomgr
+%global python_package_name koji_helpers
+%global python_setup lib/%{python_package_name}/setup.py
 %global repomgr_group repomgr
+%global repomgr_user repomgr
 
 Name:           koji-helpers
 Version:        0.2.0
@@ -18,6 +20,7 @@ Source0:        %{name}-%{version}.tar.gz
 BuildArch:      noarch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
+BuildRequires:  python%{python3_pkgversion}-devel
 %{?systemd_requires}
 BuildRequires:  systemd
 
@@ -29,6 +32,7 @@ Requires:       findutils
 Requires:       grep
 Requires:       koji
 Requires:       mash
+Requires:       python%{python3_pkgversion}
 Requires:       repoview
 Requires:       rsync
 Requires:       sed
@@ -51,10 +55,13 @@ This package provides tools that supplement the standard Koji packages.
 %setup -q
 
 %build
+%{__python3} %{python_setup} build
 
 # {{{1 install
 %install
 rm -rf %{buildroot}
+
+%{__python3} %{python_setup} install -O1 --skip-build --root %{buildroot}
 
 install -Dp -m 0644 etc/mash-everything.conf            %{buildroot}%{_sysconfdir}/%{name}/mash-everything.conf
 install -Dp -m 0644 etc/mashes.conf                     %{buildroot}%{_sysconfdir}/%{name}/mashes.conf
@@ -103,12 +110,18 @@ exit 0
 %config(noreplace) %{_sysconfdir}/%{name}/mashes.conf
 %config(noreplace) %{_sysconfdir}/%{name}/regen-repos.conf
 %config(noreplace) %{_sysconfdir}/%{name}/repos.conf
+
+%dir %{python3_sitelib}/%{python_package_name}
+
 %doc doc/AUTHOR doc/COPYING
 %{_bindir}/mash-everything
 %{_bindir}/regen-repos
 %{_libexecdir}/%{name}/_shared
 %{_unitdir}/mash-everything.service
 %{_unitdir}/regen-repos.service
+%{python3_sitelib}/%{python_package_name}/*
+%{python3_sitelib}/*egg-info
+
 
 %defattr(-,%{repomgr_user},%{repomgr_group},-)
 
