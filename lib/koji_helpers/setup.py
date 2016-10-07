@@ -7,6 +7,7 @@ setup(
     version='',
     packages=[
         'koji_helpers',
+        'koji_helpers.mash',
     ],
     package_dir={'': 'lib'},
     url='',
