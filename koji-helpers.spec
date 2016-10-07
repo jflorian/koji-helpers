@@ -74,6 +74,7 @@ install -Dp -m 0755 bin/regen-repos                     %{buildroot}%{_bindir}/r
 install -Dp -m 0755 libexec/_shared                     %{buildroot}%{_libexecdir}/%{name}/_shared
 
 install -d -m 0755 %{buildroot}%{_var}/lib/%{name}/regen-repos
+install -d -m 0755 %{buildroot}%{_var}/lib/%{name}/smashd
 
 # {{{1 clean
 %clean
@@ -126,6 +127,7 @@ exit 0
 %defattr(-,%{repomgr_user},%{repomgr_group},-)
 
 %{_var}/lib/%{name}/regen-repos
+%{_var}/lib/%{name}/smashd
 
 # {{{1 changelog
 %changelog
