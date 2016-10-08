@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" serverName="koji-c7">
+    <serverData>
+      <paths name="koji-c7">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/usr/bin" local="$PROJECT_DIR$/bin" web="/" />
+            <mapping deploy="/usr/lib/python3.4/site-packages/koji_helpers" local="$PROJECT_DIR$/lib/koji_helpers" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>
