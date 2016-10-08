@@ -22,3 +22,5 @@ __copyright__ = """2016 John Florian"""
 
 # external executables
 KOJI = '/usr/bin/koji'
+MASH = '/usr/bin/mash'
+RSYNC = '/usr/bin/rsync'
