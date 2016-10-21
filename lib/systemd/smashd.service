@@ -3,7 +3,7 @@ Description=Mash Koji builds into usable package repositories
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/mash-everything
+ExecStart=/usr/bin/smashd
 Type=simple
 User=repomgr
 

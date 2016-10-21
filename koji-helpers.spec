@@ -40,7 +40,7 @@ Requires:       sed
 
 %description
 This package provides tools that supplement the standard Koji packages.
-- mash-everything:
+- smashd:
     This tool (and service) will automatically create package repositories
     that are ready for use with tools such as yum and dnf.  The builds are
     sourced from Koji and build-tags dictate the target package repository
@@ -64,13 +64,12 @@ rm -rf %{buildroot}
 
 %{__python3} %{python_setup} install -O1 --skip-build --root %{buildroot}
 
-install -Dp -m 0644 etc/mash-everything.conf            %{buildroot}%{_sysconfdir}/%{name}/mash-everything.conf
 install -Dp -m 0644 etc/mashes.conf                     %{buildroot}%{_sysconfdir}/%{name}/mashes.conf
 install -Dp -m 0644 etc/regen-repos.conf                %{buildroot}%{_sysconfdir}/%{name}/regen-repos.conf
 install -Dp -m 0644 etc/repos.conf                      %{buildroot}%{_sysconfdir}/%{name}/repos.conf
-install -Dp -m 0644 lib/systemd/mash-everything.service %{buildroot}%{_unitdir}/mash-everything.service
+install -Dp -m 0644 etc/smashd.conf                     %{buildroot}%{_sysconfdir}/%{name}/smashd.conf
 install -Dp -m 0644 lib/systemd/regen-repos.service     %{buildroot}%{_unitdir}/regen-repos.service
-install -Dp -m 0755 bin/mash-everything                 %{buildroot}%{_bindir}/mash-everything
+install -Dp -m 0644 lib/systemd/smashd.service          %{buildroot}%{_unitdir}/smashd.service
 install -Dp -m 0755 bin/regen-repos                     %{buildroot}%{_bindir}/regen-repos
 install -Dp -m 0755 bin/smashd                          %{buildroot}%{_bindir}/smashd
 install -Dp -m 0755 libexec/_shared                     %{buildroot}%{_libexecdir}/%{name}/_shared
@@ -92,38 +91,37 @@ exit 0
 
 # {{{1 post
 %post
-%systemd_post mash-everything.service
+%systemd_post smashd.service
 %systemd_post regen-repos.service
 
 # {{{1 preun
 %preun
-%systemd_preun mash-everything.service
+%systemd_preun smashd.service
 %systemd_preun regen-repos.service
 
 # {{{1 postun
 %postun
-%systemd_postun_with_restart mash-everything.service
+%systemd_postun_with_restart smashd.service
 %systemd_postun_with_restart regen-repos.service
 
 # {{{1 files
 %files
 %defattr(-,root,root,-)
 
-%config(noreplace) %{_sysconfdir}/%{name}/mash-everything.conf
 %config(noreplace) %{_sysconfdir}/%{name}/mashes.conf
 %config(noreplace) %{_sysconfdir}/%{name}/regen-repos.conf
 %config(noreplace) %{_sysconfdir}/%{name}/repos.conf
+%config(noreplace) %{_sysconfdir}/%{name}/smashd.conf
 
 %dir %{python3_sitelib}/%{python_package_name}
 
 %doc doc/AUTHOR doc/COPYING
 
-%{_bindir}/mash-everything
 %{_bindir}/regen-repos
 %{_bindir}/smashd
 %{_libexecdir}/%{name}/_shared
-%{_unitdir}/mash-everything.service
 %{_unitdir}/regen-repos.service
+%{_unitdir}/smashd.service
 %{python3_sitelib}/%{python_package_name}/*
 %{python3_sitelib}/*egg-info
 
