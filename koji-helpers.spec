@@ -81,7 +81,7 @@ install -d -m 0755 %{buildroot}%{_var}/lib/%{name}/smashd
 %clean
 rm -rf %{buildroot}
 
-# {{{1 clean
+# {{{1 pre
 %pre
 getent group %{repomgr_group} >/dev/null || groupadd -r %{repomgr_group}
 getent passwd %{repomgr_user} >/dev/null || \
