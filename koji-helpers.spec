@@ -72,6 +72,7 @@ install -Dp -m 0644 lib/systemd/mash-everything.service %{buildroot}%{_unitdir}/
 install -Dp -m 0644 lib/systemd/regen-repos.service     %{buildroot}%{_unitdir}/regen-repos.service
 install -Dp -m 0755 bin/mash-everything                 %{buildroot}%{_bindir}/mash-everything
 install -Dp -m 0755 bin/regen-repos                     %{buildroot}%{_bindir}/regen-repos
+install -Dp -m 0755 bin/smashd                          %{buildroot}%{_bindir}/smashd
 install -Dp -m 0755 libexec/_shared                     %{buildroot}%{_libexecdir}/%{name}/_shared
 
 install -d -m 0755 %{buildroot}%{_var}/lib/%{name}/regen-repos
@@ -116,8 +117,10 @@ exit 0
 %dir %{python3_sitelib}/%{python_package_name}
 
 %doc doc/AUTHOR doc/COPYING
+
 %{_bindir}/mash-everything
 %{_bindir}/regen-repos
+%{_bindir}/smashd
 %{_libexecdir}/%{name}/_shared
 %{_unitdir}/mash-everything.service
 %{_unitdir}/regen-repos.service
