@@ -1,12 +1,12 @@
 #!/usr/bin/python3 -Es
 # coding=utf-8
-from logging import getLogger, DEBUG, StreamHandler, Formatter
+from logging import getLogger, StreamHandler, Formatter, INFO
 
-from koji_helpers.daemon import MashDaemon
+from koji_helpers.daemon import SignAndMashDaemon
 
 logger = getLogger()
-logger.setLevel(DEBUG)
+logger.setLevel(INFO)
 handler = StreamHandler()
 handler.setFormatter(Formatter('%(levelname)s - %(message)s'))
 logger.addHandler(handler)
-MashDaemon().run()
+SignAndMashDaemon().run()

@@ -38,7 +38,7 @@ __copyright__ = """2016 John Florian"""
 _log = getLogger(__name__)
 
 
-class MashDaemon(object):
+class SignAndMashDaemon(object):
     """
     A pseudo-daemon that monitors a Koji Hub for events that involve tag
     operations.  When such events are detected, the daemon waits for the
@@ -63,7 +63,7 @@ class MashDaemon(object):
                  exclude_tags: list = None,
                  ):
         """
-        Initialize the MashDaemon object.
+        Initialize the SignAndMashDaemon object.
 
         :param smashd_conf_name:
             The name of the configuration file that governs this daemons
@@ -119,7 +119,7 @@ class MashDaemon(object):
         )
 
     def __str__(self) -> str:
-        return 'MashDaemon'.format(
+        return 'SignAndMashDaemon'.format(
         )
 
     @property
