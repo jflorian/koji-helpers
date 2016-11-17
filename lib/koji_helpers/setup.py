@@ -8,6 +8,7 @@ setup(
     packages=[
         'koji_helpers',
         'koji_helpers.mash',
+        'koji_helpers.sign',
     ],
     package_dir={'': 'lib'},
     url='',
