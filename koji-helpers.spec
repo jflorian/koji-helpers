@@ -68,6 +68,7 @@ rm -rf %{buildroot}
 install -Dp -m 0644 etc/mashes.conf                     %{buildroot}%{_sysconfdir}/%{name}/mashes.conf
 install -Dp -m 0644 etc/regen-repos.conf                %{buildroot}%{_sysconfdir}/%{name}/regen-repos.conf
 install -Dp -m 0644 etc/repos.conf                      %{buildroot}%{_sysconfdir}/%{name}/repos.conf
+install -Dp -m 0600 etc/signing.conf                    %{buildroot}%{_sysconfdir}/%{name}/signing.conf
 install -Dp -m 0644 etc/smashd.conf                     %{buildroot}%{_sysconfdir}/%{name}/smashd.conf
 install -Dp -m 0644 lib/systemd/regen-repos.service     %{buildroot}%{_unitdir}/regen-repos.service
 install -Dp -m 0644 lib/systemd/smashd.service          %{buildroot}%{_unitdir}/smashd.service
@@ -128,6 +129,8 @@ exit 0
 
 
 %defattr(-,%{repomgr_user},%{repomgr_group},-)
+
+%config(noreplace) %{_sysconfdir}/%{name}/signing.conf
 
 %{_var}/lib/%{name}/regen-repos
 %{_var}/lib/%{name}/smashd

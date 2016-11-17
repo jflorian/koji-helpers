@@ -1,14 +1,12 @@
 #!/usr/bin/python3 -Es
 # coding=utf-8
-from logging import getLogger, DEBUG, StreamHandler, Formatter, INFO
+from logging import getLogger, DEBUG, StreamHandler, Formatter
 
-from koji_helpers.mash.daemon import MashDaemon
+from koji_helpers.daemon import MashDaemon
 
 logger = getLogger()
 logger.setLevel(DEBUG)
 handler = StreamHandler()
 handler.setFormatter(Formatter('%(levelname)s - %(message)s'))
 logger.addHandler(handler)
-# quiescent_period set to 90s to ensure rpms are signed
-# TODO - integrate signing here so there's only one tool polling the Koji Hub
-MashDaemon(check_interval=5, quiescent_period=15).run()
+MashDaemon().run()

@@ -24,9 +24,11 @@ from time import sleep
 from doubledog.config.rc import BasicConfigParser
 
 from koji_helpers.mash.masher import Masher
+from koji_helpers.sign.signer import Signer
 from koji_helpers.tag_history import KojiTagHistory
 
 MASHES_CONF = '/etc/koji-helpers/mashes.conf'
+SIGNING_CONF = '/etc/koji-helpers/signing.conf'
 SMASHD_CONF = '/etc/koji-helpers/smashd.conf'
 SMASHD_STATE = '/var/lib/koji-helpers/smashd/state'
 
@@ -41,8 +43,10 @@ class MashDaemon(object):
     A pseudo-daemon that monitors a Koji Hub for events that involve tag
     operations.  When such events are detected, the daemon waits for the
     activity to quiesce for a specified period.  Once quiescence is achieved,
-    the daemon will launch a mash process to compose new package repositories
-    for the affected tags.
+    the daemon will:
+        1. sign RPMs for the affected builds
+        2. mash new temporary package repositories for the affected tags
+        3. synchronize the exposed package repositories with the temporary ones
 
     This daemon does not fork, exit, etc. in the classic sense, but does run
     indefinitely performing the task described above.  This operates entirely as
@@ -53,6 +57,7 @@ class MashDaemon(object):
     def __init__(self,
                  smashd_conf_name: str = SMASHD_CONF,
                  mashes_conf_name: str = MASHES_CONF,
+                 signing_conf_name: str = SIGNING_CONF,
                  check_interval: float = 10,
                  quiescent_period: float = 30,
                  exclude_tags: list = None,
@@ -69,6 +74,10 @@ class MashDaemon(object):
             mash configuration names and file system path names relative to the
             *repo_dir* setting within the *smashd_conf_name*.
 
+        :param signing_conf_name:
+            The name of the configuration file that provides a mapping between
+            Koji tag names and Sigul key names.
+
         :param check_interval:
             The number of seconds to wait between checks for new tag events.
 
@@ -83,6 +92,8 @@ class MashDaemon(object):
         self.smashd_config = BasicConfigParser(smashd_conf_name)
         self.mashes_config = BasicConfigParser(mashes_conf_name,
                                                delimit_chars=':')
+        self.signing_config = BasicConfigParser(signing_conf_name,
+                                                delimit_chars=':')
         self.check_interval = check_interval
         self.quiescent_period = quiescent_period
         self.exclude_tags = exclude_tags or []
@@ -94,12 +105,14 @@ class MashDaemon(object):
         return ('{}.{}('
                 'smashd_conf_name={!r}, '
                 'mashes_conf_name={!r}, '
+                'signing_conf_name={!r}, '
                 'check_interval={!r}, '
                 'quiescent_period={!r}, '
                 'exclude_tags={!r})').format(
             self.__module__, self.__class__.__name__,
             self.smashd_config.filename,
             self.mashes_config.filename,
+            self.signing_config.filename,
             self.check_interval,
             self.quiescent_period,
             self.exclude_tags,
@@ -181,6 +194,8 @@ class MashDaemon(object):
             elif present_changes:
                 if self.__quiescent_elapsed >= self.quiescent_period:
                     _log.debug('quiescence achieved')
+                    _log.info('signing due to {}'.format(present_changes))
+                    Signer(present_changes, self.signing_config)
                     _log.info('mashing due to {}'.format(present_changes))
                     tags = present_changes.keys()
                     Masher(tags, self.smashd_config, self.mashes_config)

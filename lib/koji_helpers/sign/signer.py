@@ -84,7 +84,7 @@ class Signer(object):
         """
         rpms = []
         for build in self._builds:
-            _log.debug('getting RPMS for build {!r}'.format(build))
+            _log.debug('getting RPMs for build {!r}'.format(build))
             args = [KOJI, 'buildinfo', build]
             out = check_output(args).decode()
             ready = False

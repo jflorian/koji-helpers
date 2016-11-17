@@ -1,5 +1,5 @@
 [Unit]
-Description=Mash Koji builds into usable package repositories
+Description=smashd to sign and mash Koji builds into usable package repositories
 After=network.target
 
 [Service]
