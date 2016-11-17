@@ -24,3 +24,4 @@ __copyright__ = """2016 John Florian"""
 KOJI = '/usr/bin/koji'
 MASH = '/usr/bin/mash'
 RSYNC = '/usr/bin/rsync'
+SIGUL = '/usr/bin/sigul'

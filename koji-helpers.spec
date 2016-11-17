@@ -37,6 +37,7 @@ Requires:       python3-doubledog >= 2.0.0
 Requires:       repoview
 Requires:       rsync
 Requires:       sed
+Requires:       sigul
 
 %description
 This package provides tools that supplement the standard Koji packages.
