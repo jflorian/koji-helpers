@@ -20,6 +20,9 @@
 __author__ = """John Florian <jflorian@doubledog.org>"""
 __copyright__ = """2016 John Florian"""
 
+# main configuration file for the package
+CONFIG = '/etc/koji-helpers/config'
+
 # external executables
 KOJI = '/usr/bin/koji'
 MASH = '/usr/bin/mash'

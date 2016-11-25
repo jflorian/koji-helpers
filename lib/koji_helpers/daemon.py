@@ -21,15 +21,12 @@ from datetime import datetime
 from logging import getLogger
 from time import sleep
 
-from doubledog.config.rc import BasicConfigParser
-
+from koji_helpers import CONFIG
+from koji_helpers.config import Configuration
 from koji_helpers.mash.masher import Masher
 from koji_helpers.sign.signer import Signer
 from koji_helpers.tag_history import KojiTagHistory
 
-MASHES_CONF = '/etc/koji-helpers/mashes.conf'
-SIGNING_CONF = '/etc/koji-helpers/signing.conf'
-SMASHD_CONF = '/etc/koji-helpers/smashd.conf'
 SMASHD_STATE = '/var/lib/koji-helpers/smashd/state'
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
@@ -54,68 +51,25 @@ class SignAndMashDaemon(object):
     to represent a minimum amount of time rather than some precise interval.
     """
 
-    def __init__(self,
-                 smashd_conf_name: str = SMASHD_CONF,
-                 mashes_conf_name: str = MASHES_CONF,
-                 signing_conf_name: str = SIGNING_CONF,
-                 check_interval: float = 10,
-                 quiescent_period: float = 30,
-                 exclude_tags: list = None,
-                 ):
+    def __init__(self, config_name: str = CONFIG):
         """
         Initialize the SignAndMashDaemon object.
 
-        :param smashd_conf_name:
-            The name of the configuration file that governs this daemons
+        :param config_name:
+            The name of the configuration file that governs this daemon's
             behavior.
-
-        :param mashes_conf_name:
-            The name of the configuration file that provides a mapping between
-            mash configuration names and file system path names relative to the
-            *repo_dir* setting within the *smashd_conf_name*.
-
-        :param signing_conf_name:
-            The name of the configuration file that provides a mapping between
-            Koji tag names and Sigul key names.
-
-        :param check_interval:
-            The number of seconds to wait between checks for new tag events.
-
-        :param quiescent_period:
-            How many seconds must pass after new tag events are detected without
-            any further new tag events being detected before the mash process is
-            initiated.
-
-        :param exclude_tags:
-            A list of str naming tags that should be excluded from the history.
         """
-        self.smashd_config = BasicConfigParser(smashd_conf_name)
-        self.mashes_config = BasicConfigParser(mashes_conf_name,
-                                               delimit_chars=':')
-        self.signing_config = BasicConfigParser(signing_conf_name,
-                                                delimit_chars=':')
-        self.check_interval = check_interval
-        self.quiescent_period = quiescent_period
-        self.exclude_tags = exclude_tags or []
+        self.config = Configuration(config_name)
         self.__last_run = None
         self.__mark = None
         self.__quiesce_start = None
 
     def __repr__(self) -> str:
         return ('{}.{}('
-                'smashd_conf_name={!r}, '
-                'mashes_conf_name={!r}, '
-                'signing_conf_name={!r}, '
-                'check_interval={!r}, '
-                'quiescent_period={!r}, '
-                'exclude_tags={!r})').format(
+                'config_name={!r}, '
+                ')').format(
             self.__module__, self.__class__.__name__,
-            self.smashd_config.filename,
-            self.mashes_config.filename,
-            self.signing_config.filename,
-            self.check_interval,
-            self.quiescent_period,
-            self.exclude_tags,
+            self.config.filename,
         )
 
     def __str__(self) -> str:
@@ -170,9 +124,19 @@ class SignAndMashDaemon(object):
         period = self.__now - self.__quiesce_start
         return period.total_seconds()
 
+    @property
+    def __quiescent_long_enough(self) -> bool:
+        return self.__quiescent_elapsed >= self.config.smashd_quiescent_period
+
     def __get_present_changes(self):
-        hist = KojiTagHistory(self.last_run, self.__mark, self.exclude_tags)
+        hist = KojiTagHistory(self.last_run, self.__mark,
+                              self.config.smashd_exclude_tags)
         return hist.changed_tags
+
+    def __rest(self):
+        period = self.config.smashd_check_interval
+        _log.debug('sleeping {} seconds'.format(period))
+        sleep(period)
 
     def __start_quiescent_period(self):
         self.__quiesce_start = self.__now
@@ -192,14 +156,13 @@ class SignAndMashDaemon(object):
                 self.__start_quiescent_period()
                 _log.debug('new tag events detected; awaiting quiescence')
             elif present_changes:
-                if self.__quiescent_elapsed >= self.quiescent_period:
+                if self.__quiescent_long_enough:
                     _log.debug('quiescence achieved')
                     _log.info('signing due to {}'.format(present_changes))
-                    Signer(present_changes, self.signing_config)
+                    Signer(present_changes, self.config)
                     _log.info('mashing due to {}'.format(present_changes))
                     tags = present_changes.keys()
-                    Masher(tags, self.smashd_config, self.mashes_config)
+                    Masher(tags, self.config)
                     self.last_run = self.__mark
                     prior_changes = {}
-            _log.debug('sleeping {} seconds'.format(self.check_interval))
-            sleep(self.check_interval)
+            self.__rest()

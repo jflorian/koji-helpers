@@ -33,7 +33,6 @@ Requires:       grep
 Requires:       koji
 Requires:       mash
 Requires:       python%{python3_pkgversion}
-Requires:       python3-doubledog >= 2.0.0
 Requires:       repoview
 Requires:       rsync
 Requires:       sed
@@ -65,16 +64,14 @@ rm -rf %{buildroot}
 
 %{__python3} %{python_setup} install -O1 --skip-build --root %{buildroot}
 
-install -Dp -m 0644 etc/mashes.conf                     %{buildroot}%{_sysconfdir}/%{name}/mashes.conf
-install -Dp -m 0644 etc/regen-repos.conf                %{buildroot}%{_sysconfdir}/%{name}/regen-repos.conf
-install -Dp -m 0644 etc/repos.conf                      %{buildroot}%{_sysconfdir}/%{name}/repos.conf
-install -Dp -m 0600 etc/signing.conf                    %{buildroot}%{_sysconfdir}/%{name}/signing.conf
-install -Dp -m 0644 etc/smashd.conf                     %{buildroot}%{_sysconfdir}/%{name}/smashd.conf
-install -Dp -m 0644 lib/systemd/regen-repos.service     %{buildroot}%{_unitdir}/regen-repos.service
-install -Dp -m 0644 lib/systemd/smashd.service          %{buildroot}%{_unitdir}/smashd.service
-install -Dp -m 0755 bin/regen-repos                     %{buildroot}%{_bindir}/regen-repos
-install -Dp -m 0755 bin/smashd                          %{buildroot}%{_bindir}/smashd
-install -Dp -m 0755 libexec/_shared                     %{buildroot}%{_libexecdir}/%{name}/_shared
+install -Dp -m 0644 etc/regen-repos.conf            %{buildroot}%{_sysconfdir}/%{name}/regen-repos.conf
+install -Dp -m 0644 etc/repos.conf                  %{buildroot}%{_sysconfdir}/%{name}/repos.conf
+install -Dp -m 0600 etc/config                      %{buildroot}%{_sysconfdir}/%{name}/config
+install -Dp -m 0644 lib/systemd/regen-repos.service %{buildroot}%{_unitdir}/regen-repos.service
+install -Dp -m 0644 lib/systemd/smashd.service      %{buildroot}%{_unitdir}/smashd.service
+install -Dp -m 0755 bin/regen-repos                 %{buildroot}%{_bindir}/regen-repos
+install -Dp -m 0755 bin/smashd                      %{buildroot}%{_bindir}/smashd
+install -Dp -m 0755 libexec/_shared                 %{buildroot}%{_libexecdir}/%{name}/_shared
 
 install -d -m 0755 %{buildroot}%{_var}/lib/%{name}/regen-repos
 install -d -m 0755 %{buildroot}%{_var}/lib/%{name}/smashd
@@ -110,10 +107,8 @@ exit 0
 %files
 %defattr(-,root,root,-)
 
-%config(noreplace) %{_sysconfdir}/%{name}/mashes.conf
 %config(noreplace) %{_sysconfdir}/%{name}/regen-repos.conf
 %config(noreplace) %{_sysconfdir}/%{name}/repos.conf
-%config(noreplace) %{_sysconfdir}/%{name}/smashd.conf
 
 %dir %{python3_sitelib}/%{python_package_name}
 
@@ -130,7 +125,7 @@ exit 0
 
 %defattr(-,%{repomgr_user},%{repomgr_group},-)
 
-%config(noreplace) %{_sysconfdir}/%{name}/signing.conf
+%config(noreplace) %{_sysconfdir}/%{name}/config
 
 %{_var}/lib/%{name}/regen-repos
 %{_var}/lib/%{name}/smashd

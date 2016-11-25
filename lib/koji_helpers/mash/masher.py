@@ -21,9 +21,8 @@ from logging import getLogger
 from subprocess import check_output, CalledProcessError, STDOUT
 from tempfile import TemporaryDirectory
 
-from doubledog.config.rc import BasicConfigParser
-
 from koji_helpers import MASH, RSYNC
+from koji_helpers.config import Configuration, MASH_PATH
 
 RSYNC_ARGS = [RSYNC,
               '--archive',
@@ -57,14 +56,12 @@ class Masher(object):
     def __init__(
             self,
             tags: iter,
-            smashd_config: BasicConfigParser,
-            mashes_config: BasicConfigParser,
+            config: Configuration,
     ):
         """
         Initialize the Masher object.
         """
-        self.smashd_config = smashd_config
-        self.mashes_config = mashes_config
+        self.config = config
         self.tags = tags
         self._work = None
         self._tag = None
@@ -73,13 +70,11 @@ class Masher(object):
     def __repr__(self) -> str:
         return ('{}.{}('
                 'tags={!r},'
-                'smashd_config={!r}'
-                'mashes_config={!r}'
+                'config={!r}'
                 ')').format(
             self.__module__, self.__class__.__name__,
             self.tags,
-            self.smashd_config,
-            self.mashes_config,
+            self.config,
         )
 
     def __str__(self) -> str:
@@ -107,10 +102,9 @@ class Masher(object):
     def _relative_dir(self) -> str:
         """
         :return:
-            The relative file system path from the mappings in the mashes.conf
-            file.
+            The relative file system path where the mash result should land.
         """
-        return self.mashes_config.get(self._tag)
+        return self.config.get_repo(self._tag)[MASH_PATH]
 
     @property
     def _repo_dir(self) -> str:
@@ -119,7 +113,7 @@ class Masher(object):
             The file system path to the mashed package repositories are to land.
             This value comes from the smashd.conf file.
         """
-        return self.smashd_config.get('repo_dir')
+        return self.config.smashd_repo_dir
 
     def _mash_tag(self):
         """

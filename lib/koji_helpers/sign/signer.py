@@ -21,9 +21,9 @@ from logging import getLogger
 from os.path import basename
 from subprocess import Popen, PIPE, check_output, STDOUT, CalledProcessError
 
-from doubledog.config.rc import BasicConfigParser
-
 from koji_helpers import KOJI, SIGUL
+from koji_helpers.config import Configuration, GPG_KEY_ID, SIGUL_KEY_NAME, \
+    SIGUL_KEY_PASS
 from koji_helpers.tag_history import BUILD
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
@@ -40,13 +40,13 @@ class Signer(object):
     def __init__(
             self,
             changes: iter,
-            signing_config: BasicConfigParser,
+            config: Configuration,
     ):
         """
         Initialize the Signer object.
         """
         self.changes = changes
-        self.signing_config = signing_config
+        self.config = config
         self._tag = None
         self._builds = None
         self.run()
@@ -54,10 +54,10 @@ class Signer(object):
     def __repr__(self) -> str:
         return '{}.{}()'.format(
             'changes={!r},',
-            'signing_config={!r},',
+            'config={!r},',
             self.__module__, self.__class__.__name__,
             self.changes,
-            self.signing_config,
+            self.config,
         )
 
     def __str__(self) -> str:
@@ -72,7 +72,7 @@ class Signer(object):
             being processed.
         """
         # Koji has strict input requirement that the key ID is lowercase.
-        return self.signing_config.get(self._tag).split()[0].lower()
+        return self.config.get_repo(self._tag)[GPG_KEY_ID].lower()
 
     @property
     def _koji_rpms(self) -> list:
@@ -105,7 +105,7 @@ class Signer(object):
             The name of the Sigul key associated with the tag currently being
             processed.
         """
-        return self.signing_config.get(self._tag).split()[1]
+        return self.config.get_repo(self._tag)[SIGUL_KEY_NAME]
 
     @property
     def _sigul_passphrase(self) -> str:
@@ -115,7 +115,7 @@ class Signer(object):
             being processed.  This must be the passphrase that the user
             "repomgr" would use to access this key.
         """
-        return self.signing_config.get(self._tag).split()[2]
+        return self.config.get_repo(self._tag)[SIGUL_KEY_PASS]
 
     def _sign_builds(self):
         _log.info(
