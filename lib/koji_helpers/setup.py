@@ -11,6 +11,9 @@ setup(
         'koji_helpers.sign',
     ],
     package_dir={'': 'lib'},
+    require=[
+        'doubledog',
+    ],
     url='',
     license='GPLv3+',
     author='John Florian',

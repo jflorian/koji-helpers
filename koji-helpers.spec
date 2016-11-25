@@ -33,6 +33,7 @@ Requires:       grep
 Requires:       koji
 Requires:       mash
 Requires:       python%{python3_pkgversion}
+Requires:       python3-doubledog >= 2.1.0
 Requires:       repoview
 Requires:       rsync
 Requires:       sed

@@ -21,6 +21,8 @@ from datetime import datetime
 from logging import getLogger
 from time import sleep
 
+from doubledog.quiescence import QuiescenceMonitor
+
 from koji_helpers import CONFIG
 from koji_helpers.config import Configuration
 from koji_helpers.mash.masher import Masher
@@ -119,15 +121,6 @@ class SignAndMashDaemon(object):
     def __now_iso_format(self):
         return self.__now.isoformat(sep=' ')
 
-    @property
-    def __quiescent_elapsed(self):
-        period = self.__now - self.__quiesce_start
-        return period.total_seconds()
-
-    @property
-    def __quiescent_long_enough(self) -> bool:
-        return self.__quiescent_elapsed >= self.config.smashd_quiescent_period
-
     def __get_present_changes(self):
         hist = KojiTagHistory(self.last_run, self.__mark,
                               self.config.smashd_exclude_tags)
@@ -138,31 +131,26 @@ class SignAndMashDaemon(object):
         _log.debug('sleeping {} seconds'.format(period))
         sleep(period)
 
-    def __start_quiescent_period(self):
-        self.__quiesce_start = self.__now
-
     def run(self):
         _log.info('started; waiting for tag events')
-        prior_changes = {}
+        changes = {}
+        monitor = QuiescenceMonitor(self.config.smashd_quiescent_period,
+                                    changes)
         while True:
             self.__mark = self.__now_iso_format
             _log.debug(
                 'checking for tag events since {!r}'.format(self.last_run)
             )
-            present_changes = self.__get_present_changes()
-            if ((present_changes or prior_changes) and
-                    (present_changes != prior_changes)):
-                prior_changes = present_changes.copy()
-                self.__start_quiescent_period()
+            changes = self.__get_present_changes()
+            monitor.update(changes)
+            if changes:
                 _log.debug('new tag events detected; awaiting quiescence')
-            elif present_changes:
-                if self.__quiescent_long_enough:
+                if monitor.has_quiesced:
                     _log.debug('quiescence achieved')
-                    _log.info('signing due to {}'.format(present_changes))
-                    Signer(present_changes, self.config)
-                    _log.info('mashing due to {}'.format(present_changes))
-                    tags = present_changes.keys()
+                    _log.info('signing due to {}'.format(changes))
+                    Signer(changes, self.config)
+                    _log.info('mashing due to {}'.format(changes))
+                    tags = changes.keys()
                     Masher(tags, self.config)
                     self.last_run = self.__mark
-                    prior_changes = {}
             self.__rest()
