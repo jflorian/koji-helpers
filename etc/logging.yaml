@@ -1,0 +1,46 @@
+---
+
+version:                    1
+disable_existing_loggers:   False
+
+formatters:
+
+    file:
+        format:         '{asctime} {name}[{process:d}] {levelname:8s} {message}'
+        style:          '{'
+
+    long:
+        format:         '{asctime}  {levelname}  {threadName}  {name}:{lineno}  ({funcName}) {message}'
+        style:          '{'
+
+    short:
+        format:         '{levelname} - {message}'
+        style:          '{'
+
+    # Want more context?  No need to change the format here.  Just use:
+    #       journalctl -o verbose
+    #
+    # The following journal fields are always sent: MESSAGE, PRIORITY,
+    # THREAD_NAME, CODE_FILE, CODE_LINE, CODE_FUNC, LOGGER (name as supplied
+    # to getLogger call), MESSAGE_ID (optional, see JournalHandler class
+    # docs), SYSLOG_IDENTIFIER (defaults to sys.argv[0]).
+    systemd:
+        format:         '[{name}] {message}'
+        style:          '{'
+        datefmt:
+
+handlers:
+
+# This is preferred once systemd-python3 becomes available for CentOS.
+#   journal:
+#       class:          systemd.journal.JournalHandler
+#       level:          DEBUG
+#       formatter:      systemd
+    journal:
+        class:          logging.StreamHandler
+        formatter:      systemd
+        level:          INFO
+
+root:
+    level:              DEBUG
+    handlers:           [short]

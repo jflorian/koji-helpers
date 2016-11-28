@@ -23,6 +23,9 @@ __copyright__ = """2016 John Florian"""
 # main configuration file for the package
 CONFIG = '/etc/koji-helpers/config'
 
+# logging configuration file for the package
+LOGGING_CONFIG = '/etc/koji-helpers/logging.yaml'
+
 # external executables
 KOJI = '/usr/bin/koji'
 MASH = '/usr/bin/mash'

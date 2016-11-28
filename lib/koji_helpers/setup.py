@@ -12,6 +12,7 @@ setup(
     package_dir={'': 'lib'},
     require=[
         'doubledog',
+        'yaml',
     ],
     url='',
     license='GPLv3+',

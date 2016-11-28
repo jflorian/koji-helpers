@@ -33,6 +33,7 @@ Requires:       grep
 Requires:       koji
 Requires:       mash
 Requires:       python%{python3_pkgversion}
+Requires:       python%{python3_pkgversion}-PyYAML
 Requires:       python3-doubledog >= 2.1.0
 Requires:       repoview
 Requires:       rsync
@@ -65,9 +66,10 @@ rm -rf %{buildroot}
 
 %{__python3} %{python_setup} install -O1 --skip-build --root %{buildroot}
 
+install -Dp -m 0600 etc/config                      %{buildroot}%{_sysconfdir}/%{name}/config
+install -Dp -m 0644 etc/logging.yaml                %{buildroot}%{_sysconfdir}/%{name}/logging.yaml
 install -Dp -m 0644 etc/regen-repos.conf            %{buildroot}%{_sysconfdir}/%{name}/regen-repos.conf
 install -Dp -m 0644 etc/repos.conf                  %{buildroot}%{_sysconfdir}/%{name}/repos.conf
-install -Dp -m 0600 etc/config                      %{buildroot}%{_sysconfdir}/%{name}/config
 install -Dp -m 0644 lib/systemd/regen-repos.service %{buildroot}%{_unitdir}/regen-repos.service
 install -Dp -m 0644 lib/systemd/smashd.service      %{buildroot}%{_unitdir}/smashd.service
 install -Dp -m 0755 bin/regen-repos                 %{buildroot}%{_bindir}/regen-repos
@@ -108,6 +110,7 @@ exit 0
 %files
 %defattr(-,root,root,-)
 
+%config(noreplace) %{_sysconfdir}/%{name}/logging.yaml
 %config(noreplace) %{_sysconfdir}/%{name}/regen-repos.conf
 %config(noreplace) %{_sysconfdir}/%{name}/repos.conf
 

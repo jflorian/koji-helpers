@@ -1,4 +1,3 @@
-#!/usr/bin/python3 -Es
 # coding=utf-8
 
 # Copyright 2016 John Florian <jflorian@doubledog.org>
@@ -18,6 +17,23 @@
 # You should have received a copy of the GNU General Public License along with
 # koji-helpers.  If not, see <http://www.gnu.org/licenses/>.
 
-from koji_helpers.smashd.cli import SmashdCLI
+import logging.config
 
-SmashdCLI()
+import yaml
+
+from koji_helpers import LOGGING_CONFIG
+from koji_helpers.smashd.daemon import SignAndMashDaemon
+
+
+class SmashdCLI(object):
+    """
+    A basic command-line interface for startup of the SignAndMashDaemon.
+    """
+
+    def __init__(self, ):
+        """
+        Initialize the SmashdCLI object.
+        """
+        with open(LOGGING_CONFIG) as f:
+            logging.config.dictConfig(yaml.safe_load(f.read()))
+        SignAndMashDaemon().run()
