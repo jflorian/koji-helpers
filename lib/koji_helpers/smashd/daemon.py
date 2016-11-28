@@ -16,6 +16,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # koji-helpers.  If not, see <http://www.gnu.org/licenses/>.
+
 import json
 from datetime import datetime
 from logging import getLogger
