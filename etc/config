@@ -1,0 +1,46 @@
+# /etc/koji-helpers/config
+#
+# vim: filetype=configparser
+#
+# WARNING:
+#   This file must remain readable only by the `repomgr` user so as to not
+#   compromise the security of the Sigul key passphrases given here.
+
+[smashd]
+# repo_dir is the name of the directory that is to be synchronized with the
+# repository tree composited from each of the mashed repositories.  This
+# must be an absolute path and typically would be the longest path that all
+# package repositories have in common.
+;repo_dir = /mnt/rpms
+
+# check_interval is the (minimum) number of seconds that smashd is to wait
+# between checks for new tag events.
+;check_interval = 10.0
+
+# Once smashd does detect new tag events, it will start a countdown timer for
+# quiescent_period seconds.  If additional new tag events occur during this
+# period, smashd will restart the countdown timer.  Only once the countdown
+# timer expires without any further new tag events will smashd begin to act
+# upon the events.  Mashing can be an intensive process and this parameter
+# allows you to strike a balance between a responsive smashd process without
+# overly abusing resources.  A value of zero will defeat this feature.
+;quiescent_period = 30.0
+
+# exclude_tags is a space-separated list of tags which smashd should ignore.
+;exclude_tags = trashcan
+
+
+
+# You must also define a section for each package repository.  The section
+# name must begin with `repository ` plus the name of a Koji tag which
+# indicates the disposition of builds having that tag.  Builds may have more
+# than one such tag which would cause smashd to place that package in more
+# than one repository, if desired.  Builds not having any such tag are
+# excluded from the package repositories.  Each such repository section should
+# look like the following example:
+
+;[repository f25-testing]
+;mash_path = fedora/testing/25
+;gpg_key_id = A9B8C7D6
+;sigul_key_name = fedora_25
+;sigul_key_pass = SuperSecretSigningPassphrase
