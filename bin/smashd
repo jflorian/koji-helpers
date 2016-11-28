@@ -2,7 +2,7 @@
 # coding=utf-8
 from logging import getLogger, StreamHandler, Formatter, INFO
 
-from koji_helpers.daemon import SignAndMashDaemon
+from koji_helpers.smashd.daemon import SignAndMashDaemon
 
 logger = getLogger()
 logger.setLevel(INFO)

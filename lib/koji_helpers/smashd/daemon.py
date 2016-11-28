@@ -25,9 +25,9 @@ from doubledog.quiescence import QuiescenceMonitor
 
 from koji_helpers import CONFIG
 from koji_helpers.config import Configuration
-from koji_helpers.mash.masher import Masher
-from koji_helpers.sign.signer import Signer
-from koji_helpers.tag_history import KojiTagHistory
+from koji_helpers.smashd.masher import Masher
+from koji_helpers.smashd.signer import Signer
+from koji_helpers.smashd.tag_history import KojiTagHistory
 
 SMASHD_STATE = '/var/lib/koji-helpers/smashd/state'
 

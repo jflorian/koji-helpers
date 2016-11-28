@@ -24,7 +24,7 @@ from subprocess import Popen, PIPE, check_output, STDOUT, CalledProcessError
 from koji_helpers import KOJI, SIGUL
 from koji_helpers.config import Configuration, GPG_KEY_ID, SIGUL_KEY_NAME, \
     SIGUL_KEY_PASS
-from koji_helpers.tag_history import BUILD
+from koji_helpers.smashd.tag_history import BUILD
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
 __copyright__ = """2016 John Florian"""

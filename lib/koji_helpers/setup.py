@@ -7,8 +7,7 @@ setup(
     version='',
     packages=[
         'koji_helpers',
-        'koji_helpers.mash',
-        'koji_helpers.sign',
+        'koji_helpers.smashd',
     ],
     package_dir={'': 'lib'},
     require=[
