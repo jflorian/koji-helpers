@@ -26,10 +26,6 @@ BuildRequires:  systemd
 
 Requires(pre):  shadow-utils
 
-Requires:       bash
-Requires:       coreutils
-Requires:       findutils
-Requires:       grep
 Requires:       koji
 Requires:       mash
 Requires:       python%{python3_pkgversion}
@@ -38,7 +34,6 @@ Requires:       python3-doubledog >= 2.1.0
 Requires:       python34-requests
 Requires:       repoview
 Requires:       rsync
-Requires:       sed
 Requires:       sigul
 Requires:       systemd
 
@@ -55,11 +50,6 @@ This package provides tools that supplement the standard Koji packages.
     that are ready for use with tools such as yum and dnf.  The builds are
     sourced from Koji and build-tags dictate the target package repository
     through a flexible mapping.
-- regen-repos: 
-    This tool (and service) will automatically cause your Koji deployment to
-    regenerate Koji's internal repositories when it detects that your external
-    repositories change.  Normally Koji (Kojira actually) only monitors it's
-    own internal repositories.
 
 # {{{1 prep & build
 %prep
@@ -74,20 +64,14 @@ rm -rf %{buildroot}
 
 %{__python3} %{python_setup} install -O1 --skip-build --root %{buildroot}
 
-install -Dp -m 0600 etc/config                      %{buildroot}%{_sysconfdir}/%{name}/config
-install -Dp -m 0644 etc/logging.yaml                %{buildroot}%{_sysconfdir}/%{name}/logging.yaml
-install -Dp -m 0644 etc/regen-repos.conf            %{buildroot}%{_sysconfdir}/%{name}/regen-repos.conf
-install -Dp -m 0644 etc/repos.conf                  %{buildroot}%{_sysconfdir}/%{name}/repos.conf
-install -Dp -m 0644 lib/systemd/gojira.service      %{buildroot}%{_unitdir}/gojira.service
-install -Dp -m 0644 lib/systemd/regen-repos.service %{buildroot}%{_unitdir}/regen-repos.service
-install -Dp -m 0644 lib/systemd/smashd.service      %{buildroot}%{_unitdir}/smashd.service
-install -Dp -m 0755 bin/gojira                      %{buildroot}%{_bindir}/gojira
-install -Dp -m 0755 bin/regen-repos                 %{buildroot}%{_bindir}/regen-repos
-install -Dp -m 0755 bin/smashd                      %{buildroot}%{_bindir}/smashd
-install -Dp -m 0755 libexec/_shared                 %{buildroot}%{_libexecdir}/%{name}/_shared
+install -Dp -m 0600 etc/config                  %{buildroot}%{_sysconfdir}/%{name}/config
+install -Dp -m 0644 etc/logging.yaml            %{buildroot}%{_sysconfdir}/%{name}/logging.yaml
+install -Dp -m 0644 lib/systemd/gojira.service  %{buildroot}%{_unitdir}/gojira.service
+install -Dp -m 0644 lib/systemd/smashd.service  %{buildroot}%{_unitdir}/smashd.service
+install -Dp -m 0755 bin/gojira                  %{buildroot}%{_bindir}/gojira
+install -Dp -m 0755 bin/smashd                  %{buildroot}%{_bindir}/smashd
 
 install -d -m 0755 %{buildroot}%{_var}/lib/%{name}/gojira
-install -d -m 0755 %{buildroot}%{_var}/lib/%{name}/regen-repos
 install -d -m 0755 %{buildroot}%{_var}/lib/%{name}/smashd
 
 # {{{1 clean
@@ -106,38 +90,30 @@ exit 0
 %post
 %systemd_post gojira.service
 %systemd_post smashd.service
-%systemd_post regen-repos.service
 
 # {{{1 preun
 %preun
 %systemd_preun gojira.service
 %systemd_preun smashd.service
-%systemd_preun regen-repos.service
 
 # {{{1 postun
 %postun
 %systemd_postun_with_restart gojira.service
 %systemd_postun_with_restart smashd.service
-%systemd_postun_with_restart regen-repos.service
 
 # {{{1 files
 %files
 %defattr(-,root,root,-)
 
 %config(noreplace) %{_sysconfdir}/%{name}/logging.yaml
-%config(noreplace) %{_sysconfdir}/%{name}/regen-repos.conf
-%config(noreplace) %{_sysconfdir}/%{name}/repos.conf
 
 %dir %{python3_sitelib}/%{python_package_name}
 
 %doc doc/AUTHOR doc/COPYING
 
 %{_bindir}/gojira
-%{_bindir}/regen-repos
 %{_bindir}/smashd
-%{_libexecdir}/%{name}/_shared
 %{_unitdir}/gojira.service
-%{_unitdir}/regen-repos.service
 %{_unitdir}/smashd.service
 %{python3_sitelib}/%{python_package_name}/*
 %{python3_sitelib}/*egg-info
@@ -148,7 +124,6 @@ exit 0
 %config(noreplace) %{_sysconfdir}/%{name}/config
 
 %{_var}/lib/%{name}/gojira
-%{_var}/lib/%{name}/regen-repos
 %{_var}/lib/%{name}/smashd
 
 # {{{1 changelog
