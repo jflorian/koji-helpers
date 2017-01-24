@@ -43,6 +43,12 @@ Requires:       sigul
 
 %description
 This package provides tools that supplement the standard Koji packages.
+- gojira:
+    This tool (and service) will automatically cause your Koji deployment to
+    regenerate its internal repositories for a buildroot tag when it detects
+    that the related external repositories change.  Thus, what Kojira does
+    only for Koji's own internal repositories, Gojira does for the external
+    repositories.
 - smashd:
     This tool (and service) will automatically create package repositories
     that are ready for use with tools such as yum and dnf.  The builds are
@@ -73,6 +79,7 @@ install -Dp -m 0644 etc/regen-repos.conf            %{buildroot}%{_sysconfdir}/%
 install -Dp -m 0644 etc/repos.conf                  %{buildroot}%{_sysconfdir}/%{name}/repos.conf
 install -Dp -m 0644 lib/systemd/regen-repos.service %{buildroot}%{_unitdir}/regen-repos.service
 install -Dp -m 0644 lib/systemd/smashd.service      %{buildroot}%{_unitdir}/smashd.service
+install -Dp -m 0755 bin/gojira                      %{buildroot}%{_bindir}/gojira
 install -Dp -m 0755 bin/regen-repos                 %{buildroot}%{_bindir}/regen-repos
 install -Dp -m 0755 bin/smashd                      %{buildroot}%{_bindir}/smashd
 install -Dp -m 0755 libexec/_shared                 %{buildroot}%{_libexecdir}/%{name}/_shared
@@ -120,6 +127,7 @@ exit 0
 
 %doc doc/AUTHOR doc/COPYING
 
+%{_bindir}/gojira
 %{_bindir}/regen-repos
 %{_bindir}/smashd
 %{_libexecdir}/%{name}/_shared
