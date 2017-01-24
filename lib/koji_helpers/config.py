@@ -70,8 +70,7 @@ class Configuration(object):
         config = ConfigParser()
         config.read(self.filename)
         self.smashd_check_interval = config.getfloat(SMASHD, CHECK_INTERVAL)
-        self.smashd_quiescent_period = config.getfloat(SMASHD,
-                                                       QUIESCENT_PERIOD)
+        self.smashd_quiescent_period = config.getfloat(SMASHD, QUIESCENT_PERIOD)
         self.smashd_exclude_tags = config.get(SMASHD, EXCLUDE_TAGS).split()
         self.smashd_repo_dir = config.get(SMASHD, REPO_DIR)
         self.__repos = {}
@@ -98,6 +97,5 @@ class Configuration(object):
             The name of the repository configuration to be returned.
         :return:
             The configuration for the named repository.
-
         """
         return self.__repos[name]
