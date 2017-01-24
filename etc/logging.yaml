@@ -43,4 +43,4 @@ handlers:
 
 root:
     level:              DEBUG
-    handlers:           [short]
+    handlers:           [journal]
