@@ -1,0 +1,11 @@
+[Unit]
+Description=Gorira to update Koji with changes in external dependencies
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/gojira
+Type=simple
+User=repomgr
+
+[Install]
+WantedBy=multi-user.target
