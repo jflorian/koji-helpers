@@ -65,7 +65,6 @@ class SignAndMashDaemon(object):
         self.config = Configuration(config_name)
         self.__last_run = None
         self.__mark = None
-        self.__quiesce_start = None
 
     def __repr__(self) -> str:
         return ('{}.{}('
