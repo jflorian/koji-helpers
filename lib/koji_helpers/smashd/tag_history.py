@@ -1,6 +1,6 @@
 # coding=utf-8
 
-# Copyright 2016 John Florian <jflorian@doubledog.org>
+# Copyright 2016-2017 John Florian <jflorian@doubledog.org>
 #
 # This file is part of koji-helpers.
 #
@@ -24,7 +24,7 @@ from subprocess import check_output
 from koji_helpers import KOJI
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
-__copyright__ = """2016 John Florian"""
+__copyright__ = """2016-2017 John Florian"""
 
 # keys
 BUILD = 'build'

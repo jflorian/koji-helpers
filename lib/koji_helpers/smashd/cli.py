@@ -1,6 +1,6 @@
 # coding=utf-8
 
-# Copyright 2016 John Florian <jflorian@doubledog.org>
+# Copyright 2016-2017 John Florian <jflorian@doubledog.org>
 #
 # This file is part of koji-helpers.
 #
@@ -23,6 +23,9 @@ import yaml
 
 from koji_helpers import LOGGING_CONFIG
 from koji_helpers.smashd.daemon import SignAndMashDaemon
+
+__author__ = """John Florian <jflorian@doubledog.org>"""
+__copyright__ = """2016-2017 John Florian"""
 
 
 class SmashdCLI(object):

@@ -1,6 +1,6 @@
 # coding=utf-8
 
-# Copyright 2016 John Florian <jflorian@doubledog.org>
+# Copyright 2016-2017 John Florian <jflorian@doubledog.org>
 #
 # This file is part of koji-helpers.
 #
@@ -33,7 +33,7 @@ from koji_helpers.smashd.tag_history import KojiTagHistory
 SMASHD_STATE = '/var/lib/koji-helpers/smashd/state'
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
-__copyright__ = """2016 John Florian"""
+__copyright__ = """2016-2017 John Florian"""
 
 _log = getLogger(__name__)
 
