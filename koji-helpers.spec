@@ -35,6 +35,7 @@ Requires:       mash
 Requires:       python%{python3_pkgversion}
 Requires:       python%{python3_pkgversion}-PyYAML
 Requires:       python3-doubledog >= 2.1.0
+Requires:       python34-requests
 Requires:       repoview
 Requires:       rsync
 Requires:       sed
@@ -76,6 +77,7 @@ install -Dp -m 0755 bin/regen-repos                 %{buildroot}%{_bindir}/regen
 install -Dp -m 0755 bin/smashd                      %{buildroot}%{_bindir}/smashd
 install -Dp -m 0755 libexec/_shared                 %{buildroot}%{_libexecdir}/%{name}/_shared
 
+install -d -m 0755 %{buildroot}%{_var}/lib/%{name}/gojira
 install -d -m 0755 %{buildroot}%{_var}/lib/%{name}/regen-repos
 install -d -m 0755 %{buildroot}%{_var}/lib/%{name}/smashd
 
@@ -131,6 +133,7 @@ exit 0
 
 %config(noreplace) %{_sysconfdir}/%{name}/config
 
+%{_var}/lib/%{name}/gojira
 %{_var}/lib/%{name}/regen-repos
 %{_var}/lib/%{name}/smashd
 

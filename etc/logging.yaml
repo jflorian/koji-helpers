@@ -3,6 +3,12 @@
 version:                    1
 disable_existing_loggers:   False
 
+filters:
+
+    exclude_requests:
+        ():             koji_helpers.logging.ModuleNameFilter
+        exclude:        ['doubledog/quiescence.py', 'requests/packages/urllib3/connectionpool.py']
+
 formatters:
 
     file:
@@ -38,6 +44,7 @@ handlers:
 #       formatter:      systemd
     journal:
         class:          logging.StreamHandler
+        filters:        [exclude_requests]
         formatter:      systemd
         level:          INFO
 

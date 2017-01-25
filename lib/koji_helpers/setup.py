@@ -13,6 +13,7 @@ setup(
     package_dir={'': 'lib'},
     require=[
         'doubledog',
+        'requests',
         'yaml',
     ],
     url='',
