@@ -1,9 +1,9 @@
 [Unit]
-Description=Koji external repository monitoring
+Description=Gorira to update Koji with changes in external dependencies
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/regen-repos
+ExecStart=/usr/bin/gojira
 Type=simple
 User=repomgr
 

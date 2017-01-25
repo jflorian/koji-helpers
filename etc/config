@@ -6,6 +6,33 @@
 #   This file must remain readable only by the `repomgr` user so as to not
 #   compromise the security of the Sigul key passphrases given here.
 
+[gojira]
+# check_interval is the (minimum) number of seconds that gojira is to wait
+# between checks for changes in the external repositories.
+;check_interval = 60.0
+
+# Once gojira does detect changes in the external repositories, it will start
+# a countdown timer for quiescent_period seconds.  If additional changes occur
+# during this period, gojira will restart the countdown timer.  Only once the
+# countdown timer expires without any further changes will gojira begin to act
+# upon the changes.  Regenerating Koji's internal repository meta-data can be
+# an intensive process and this parameter allows you to strike a balance
+# between a responsive gojira process without overly abusing resources.
+# A value of zero will defeat this feature.
+;quiescent_period = 600.0
+
+
+# You must also define a section for each Koji buildroot tag that has
+# dependencies on external package repositories.  The section name must begin
+# with `buildroot ` plus the name of the Koji buildroot tag.  Each such
+# buildroot section should look like the following example:
+
+;[buildroot f25-build]
+;arches = i386,x86_64
+;dependencies = https://example.com/mirrors/fedora/releases/25/Everything/$basearch/os,https://example.com/mirrors/fedora/updates/25/$basearch
+
+
+
 [smashd]
 # repo_dir is the name of the directory that is to be synchronized with the
 # repository tree composited from each of the mashed repositories.  This
@@ -28,7 +55,6 @@
 
 # exclude_tags is a space-separated list of tags which smashd should ignore.
 ;exclude_tags = trashcan
-
 
 
 # You must also define a section for each package repository.  The section

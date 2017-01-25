@@ -7,11 +7,13 @@ setup(
     version='',
     packages=[
         'koji_helpers',
+        'koji_helpers.gojira',
         'koji_helpers.smashd',
     ],
     package_dir={'': 'lib'},
     require=[
         'doubledog',
+        'requests',
         'yaml',
     ],
     url='',

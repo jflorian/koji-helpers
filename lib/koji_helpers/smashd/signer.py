@@ -19,11 +19,12 @@
 
 from logging import getLogger
 from os.path import basename
-from subprocess import Popen, PIPE, check_output, STDOUT, CalledProcessError
+from subprocess import Popen, PIPE, STDOUT
 
-from koji_helpers import KOJI, SIGUL
+from koji_helpers import SIGUL
 from koji_helpers.config import Configuration, GPG_KEY_ID, SIGUL_KEY_NAME, \
     SIGUL_KEY_PASS
+from koji_helpers.koji import KojiBuildInfo, KojiWriteSignedRpm
 from koji_helpers.smashd.tag_history import BUILD
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
@@ -85,10 +86,9 @@ class Signer(object):
         rpms = []
         for build in self._builds:
             _log.debug('getting RPMs for build {!r}'.format(build))
-            args = [KOJI, 'buildinfo', build]
-            out = check_output(args).decode()
+            info = KojiBuildInfo(build).output
             ready = False
-            for line in out.splitlines():
+            for line in info.splitlines():
                 if ready:
                     rpm = basename(line.strip())
                     _log.debug('got RPM {!r}'.format(rpm))
@@ -151,15 +151,7 @@ class Signer(object):
                 self._koji_key,
             )
         )
-        args = [KOJI, 'write-signed-rpm', self._koji_key] + self._builds
-        _log.debug('about to call {!r}'.format(args))
-        try:
-            out = check_output(args, stderr=STDOUT)
-        except CalledProcessError as e:
-            _log.error('{}\noutput:\n{}'.format(e, e.output.decode()))
-        else:
-            for line in out.decode().splitlines():
-                _log.debug('koji: {}'.format(line))
+        KojiWriteSignedRpm(self._koji_key, self._builds)
 
     def run(self):
         _log.info('signing due to {}'.format(self.changes))

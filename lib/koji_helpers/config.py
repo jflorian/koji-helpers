@@ -23,6 +23,8 @@ from logging import getLogger
 from koji_helpers import CONFIG
 
 # section names
+BUILDROOT_PREFIX = 'buildroot '
+GOJIRA = 'gojira'
 REPOSITORY_PREFIX = 'repository '
 SMASHD = 'smashd'
 
@@ -69,18 +71,37 @@ class Configuration(object):
         _log.debug('{} reading'.format(self))
         config = ConfigParser()
         config.read(self.filename)
+        self.gojira_check_interval = config.getfloat(GOJIRA, CHECK_INTERVAL)
+        self.gojira_quiescent_period = config.getfloat(GOJIRA, QUIESCENT_PERIOD)
         self.smashd_check_interval = config.getfloat(SMASHD, CHECK_INTERVAL)
         self.smashd_quiescent_period = config.getfloat(SMASHD, QUIESCENT_PERIOD)
         self.smashd_exclude_tags = config.get(SMASHD, EXCLUDE_TAGS).split()
         self.smashd_repo_dir = config.get(SMASHD, REPO_DIR)
+        self.__buildroots = {}
         self.__repos = {}
         for section in config.sections():
-            if section.startswith(REPOSITORY_PREFIX):
+            if section.startswith(BUILDROOT_PREFIX):
+                koji_tag = section[len(BUILDROOT_PREFIX):]
+                self.__buildroots[koji_tag] = config[section]
+            elif section.startswith(REPOSITORY_PREFIX):
                 koji_tag = section[len(REPOSITORY_PREFIX):]
                 self.__repos[koji_tag] = config[section]
         _log.debug(
-            '{} configured {:,d} repos'.format(self, len(list(self.repos)))
+            '{} configured {:,d} repos and {:,d} buildroots'.format(
+                self,
+                len(list(self.repos)),
+                len(list(self.buildroots)),
+            )
         )
+
+    @property
+    def buildroots(self) -> iter:
+        """
+        :return:
+            An iter of str with each being one of the buildroots defined in
+            the configuration.
+        """
+        return self.__buildroots.keys()
 
     @property
     def repos(self) -> iter:
@@ -90,6 +111,15 @@ class Configuration(object):
             the configuration.
         """
         return self.__repos.keys()
+
+    def get_buildroot(self, name: str):
+        """
+        :param name:
+            The name of the buildroot configuration to be returned.
+        :return:
+            The configuration for the named buildroot.
+        """
+        return self.__buildroots[name]
 
     def get_repo(self, name: str):
         """

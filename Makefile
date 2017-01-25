@@ -1,22 +1,25 @@
-# Extract NVR from the spec while stripping any macros, specifically the
-# disttag macro.
-name := $(shell awk '/^Name:/{print $$2}' *.spec)
-version := $(shell \
-	awk '/^Version:/{print gensub(/%{.*?}/, "", "g", $$2)}' *.spec \
-	)
-release := $(shell \
-	awk '/^Release:/{print gensub(/%{.*?}/, "", "g", $$2)}' *.spec \
-	)
+specfile = $(firstword $(wildcard *.spec))
+
+# If there are sub-packages, assume the first is appropriate in forming NVR.
+# The dist macro is defined as a null string because it's normal value is
+# unwanted in these query results.
+queryspec = $(firstword \
+				$(shell rpm --query --queryformat "%{$(1)}\n" \
+							--define="dist %{nil}" \
+							--specfile $(specfile)) \
+			)
+
+name := $(call queryspec,NAME)
+version := $(call queryspec,VERSION)
+release := $(call queryspec,RELEASE)
+
 # The treeish we'll archive is effectively the Git tag that tito created.
 treeish := ${name}-${version}-${release}
 
-# Koji's buildSRPMFromSCM method expects a target named "sources" which
-# ultimately must ensure that a tarball of the package's sources and its spec
-# file are present.  Our practice is to always keep a spec file in the Git
-# repository, but we must build the tarball on the fly to resemble an upstream
-# published work.
-sources:
-	git archive \
+sources: tarball
+
+tarball:
+	@git archive \
 		--output=${name}-${version}.tar.gz \
 		--prefix=${name}-${version}/ \
 		${treeish}
