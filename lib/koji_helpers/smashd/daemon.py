@@ -144,7 +144,7 @@ class SignAndMashDaemon(object):
             changes = self.__get_present_changes()
             monitor.update(changes)
             if changes:
-                _log.debug('new tag events detected; awaiting quiescence')
+                _log.debug('new tag events detected')
                 if monitor.has_quiesced:
                     _log.debug('quiescence achieved')
                     _log.info('signing due to {}'.format(changes))
@@ -153,4 +153,6 @@ class SignAndMashDaemon(object):
                     tags = changes.keys()
                     Masher(tags, self.config)
                     self.last_run = self.__mark
+                else:
+                    _log.debug('awaiting quiescence')
             self.__rest()
