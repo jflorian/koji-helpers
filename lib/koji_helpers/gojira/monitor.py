@@ -137,8 +137,8 @@ class BuildRootDependenciesMonitor(Thread):
             package repository to be monitored.
         """
         br_config = self.config.get_buildroot(self.buildroot)
-        for arch in br_config.get('arches').split(','):
-            for dep in br_config.get('dependencies').split(','):
+        for arch in br_config.get('arches').split():
+            for dep in br_config.get('dependencies').split():
                 url = os.path.join(dep, 'repodata', 'repomd.xml')
                 url = url.replace('$basearch', arch)
                 yield url
