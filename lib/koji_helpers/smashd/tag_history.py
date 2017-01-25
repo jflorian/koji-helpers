@@ -19,9 +19,8 @@
 
 import re
 from logging import getLogger
-from subprocess import check_output
 
-from koji_helpers import KOJI
+from koji_helpers.koji import KojiListHistory
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
 __copyright__ = """2016-2017 John Florian"""
@@ -78,11 +77,7 @@ class KojiTagHistory(object):
 
     @property
     def __koji_history(self):
-        args = [KOJI, 'list-history',
-                '--after={}'.format(self.after),
-                '--before={}'.format(self.before),
-                ]
-        return check_output(args).decode().splitlines()
+        return KojiListHistory(self.after, self.before).output.splitlines()
 
     @property
     def __parsed_history(self) -> list:

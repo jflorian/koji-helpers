@@ -127,6 +127,36 @@ class KojiTaskInfo(KojiCommand):
         return match.group(1) if match else 'unknown'
 
 
+class KojiListHistory(KojiCommand):
+    """
+    A wrapper around the `koji list-history` command.
+    """
+
+    def __init__(self, after: str, before: str):
+        """
+        :param after:
+            Include only tag history events occurring after this timestamp,
+            expressed per RFC 3339 format.
+
+        :param before:
+            Include only tag history events occurring before this timestamp,
+            expressed per RFC 3339 format.
+        """
+        self.before = before
+        self.after = after
+        super().__init__([
+            'list-history',
+            '--after={}'.format(self.after),
+            '--before={}'.format(self.before),
+        ])
+
+    def __str__(self) -> str:
+        return '<Koji ListHistory {!r}-{!r}>'.format(
+            self.after,
+            self.before,
+        )
+
+
 class KojiRegenRepo(KojiCommand):
     """
     A wrapper around the `koji regen-repo` command.
