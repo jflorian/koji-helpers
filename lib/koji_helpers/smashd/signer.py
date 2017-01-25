@@ -24,6 +24,7 @@ from subprocess import Popen, PIPE, check_output, STDOUT, CalledProcessError
 from koji_helpers import KOJI, SIGUL
 from koji_helpers.config import Configuration, GPG_KEY_ID, SIGUL_KEY_NAME, \
     SIGUL_KEY_PASS
+from koji_helpers.koji import KojiBuildInfo
 from koji_helpers.smashd.tag_history import BUILD
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
@@ -85,10 +86,9 @@ class Signer(object):
         rpms = []
         for build in self._builds:
             _log.debug('getting RPMs for build {!r}'.format(build))
-            args = [KOJI, 'buildinfo', build]
-            out = check_output(args).decode()
+            info = KojiBuildInfo(build).output
             ready = False
-            for line in out.splitlines():
+            for line in info.splitlines():
                 if ready:
                     rpm = basename(line.strip())
                     _log.debug('got RPM {!r}'.format(rpm))

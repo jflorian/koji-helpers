@@ -87,6 +87,26 @@ class KojiCommand(object):
             )
 
 
+class KojiBuildInfo(KojiCommand):
+    """
+    A wrapper around the `koji buildinfo` command.
+    """
+
+    def __init__(self, nvr):
+        """
+        :param nvr:
+            A str or list or str with each being one Name-Version-Release value
+            to be queried.
+        """
+        self.nvr = nvr if isinstance(nvr, list) else [nvr]
+        super().__init__(['buildinfo'] + self.nvr)
+
+    def __str__(self) -> str:
+        return '<Koji BuildInfo {!r}>'.format(
+            self.nvr,
+        )
+
+
 class KojiTaskInfo(KojiCommand):
     """
     A wrapper around the `koji taskinfo` command.
