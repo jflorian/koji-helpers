@@ -16,7 +16,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # koji-helpers.  If not, see <http://www.gnu.org/licenses/>.
-from logging import LoggerAdapter
+from logging import LoggerAdapter, Filter
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
 __copyright__ = """2017 John Florian"""
@@ -32,3 +32,35 @@ class KojiHelperLoggerAdapter(LoggerAdapter):
     """
     def process(self, msg, kwargs):
         return '{}:  {}'.format(self.extra['name'], msg), kwargs
+
+
+class ModuleNameFilter(Filter):
+    """
+    A simple `logging filter
+    <https://docs.python.org/3/library/logging.html#logging.Filter>`_ to exclude
+    `LogRecord
+    <https://docs.python.org/3/library/logging.html#logging.LogRecord>`_
+    instances originating from any of a list of banned Python module names.
+    """
+
+    def __init__(self, exclude=None):
+        """
+        :param exclude:
+            A list of str, each of which describes a module path name that is to
+            be excluded.
+        :return:
+            `True` (to allow logging) of the record unless the
+            `LogRecord
+            <https://docs.python.org/3/library/logging.html#logging.LogRecord>`_
+            originated from a module whose path name ends with any of the
+            entries in *exclude*.
+        """
+        super().__init__()
+        self.exclude = exclude
+
+    def filter(self, record):
+        if self.exclude is not None:
+            for module_name in self.exclude:
+                if record.pathname.endswith(module_name):
+                    return False
+        return True
