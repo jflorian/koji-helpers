@@ -171,8 +171,10 @@ class Masher(object):
 
     def run(self):
         """Mash a package repository for each tag."""
+        _log.info('mashing started')
         for self._tag in self.tags:
             with TemporaryDirectory(prefix='{}-'.format(self)) as self._work:
                 _log.debug('created work directory {!r}'.format(self._work))
                 if self._mash_tag():
                     self._sync_repo()
+        _log.info('mashing completed')

@@ -162,7 +162,9 @@ class Signer(object):
                 _log.debug('koji: {}'.format(line))
 
     def run(self):
+        _log.info('signing due to {}'.format(self.changes))
         for self._tag, change in self.changes.items():
             self._builds = list(change[BUILD])
             if self._sign_builds():
                 self._write_signed_rpms()
+        _log.info('signing completed')

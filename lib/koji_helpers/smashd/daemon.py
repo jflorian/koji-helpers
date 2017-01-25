@@ -147,9 +147,7 @@ class SignAndMashDaemon(object):
                 _log.debug('new tag events detected')
                 if monitor.has_quiesced:
                     _log.debug('quiescence achieved')
-                    _log.info('signing due to {}'.format(changes))
                     Signer(changes, self.config)
-                    _log.info('mashing due to {}'.format(changes))
                     tags = changes.keys()
                     Masher(tags, self.config)
                     self.last_run = self.__mark
