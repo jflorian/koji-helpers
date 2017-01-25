@@ -27,6 +27,7 @@ from doubledog.quiescence import QuiescenceMonitor
 from koji_helpers import CONFIG
 from koji_helpers.config import Configuration
 from koji_helpers.smashd.masher import Masher
+from koji_helpers.smashd.notifier import Notifier
 from koji_helpers.smashd.signer import Signer
 from koji_helpers.smashd.tag_history import KojiTagHistory
 
@@ -151,6 +152,7 @@ class SignAndMashDaemon(object):
                     tags = changes.keys()
                     Masher(tags, self.config)
                     self.last_run = self.__mark
+                    Notifier(changes, self.config)
                 else:
                     _log.debug('awaiting quiescence')
             self.__rest()

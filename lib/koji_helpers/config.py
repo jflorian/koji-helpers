@@ -33,6 +33,8 @@ CHECK_INTERVAL = 'check_interval'
 EXCLUDE_TAGS = 'exclude_tags'
 GPG_KEY_ID = 'gpg_key_id'
 MASH_PATH = 'mash_path'
+NOTIFICATIONS_FROM = 'notifications_from'
+NOTIFICATIONS_TO = 'notifications_to'
 QUIESCENT_PERIOD = 'quiescent_period'
 REPO_DIR = 'repo_dir'
 SIGUL_KEY_NAME = 'sigul_key_name'
@@ -77,6 +79,9 @@ class Configuration(object):
         self.smashd_quiescent_period = config.getfloat(SMASHD, QUIESCENT_PERIOD)
         self.smashd_exclude_tags = config.get(SMASHD, EXCLUDE_TAGS).split()
         self.smashd_repo_dir = config.get(SMASHD, REPO_DIR)
+        self.smashd_notifications_from = config.get(SMASHD, NOTIFICATIONS_FROM)
+        self.smashd_notifications_to = config.get(SMASHD,
+                                                  NOTIFICATIONS_TO).split()
         self.__buildroots = {}
         self.__repos = {}
         for section in config.sections():
