@@ -25,7 +25,7 @@ from koji_helpers import SIGUL
 from koji_helpers.config import Configuration, GPG_KEY_ID, SIGUL_KEY_NAME, \
     SIGUL_KEY_PASS
 from koji_helpers.koji import KojiBuildInfo, KojiWriteSignedRpm
-from koji_helpers.smashd.tag_history import BUILD
+from koji_helpers.smashd.tag_history import BUILD, TAG_IN
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
 __copyright__ = """2016-2017 John Florian"""
@@ -156,7 +156,7 @@ class Signer(object):
     def run(self):
         _log.info('signing due to {}'.format(self.changes))
         for self._tag, change in self.changes.items():
-            self._builds = list(change[BUILD])
+            self._builds = list(change[TAG_IN][BUILD])
             if self._sign_builds():
                 self._write_signed_rpms()
         _log.info('signing completed')

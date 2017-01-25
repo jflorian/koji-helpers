@@ -27,15 +27,18 @@ __copyright__ = """2016-2017 John Florian"""
 
 # keys
 BUILD = 'build'
+DIRECTION = 'direction'
+TAG_IN = 'in'
+TAG_OUT = 'out'
 TAG = 'tag'
 TIME = 'time'
 USER = 'user'
 
 # pre-compiled regex
 TAGGED_RE = re.compile(
-    '^(?P<{}>.*\d{{4}}) (?P<{}>\S+) (tagged into|untagged from) '
+    '^(?P<{}>.*\d{{4}}) (?P<{}>\S+) (?P<{}>tagged into|untagged from) '
     '(?P<{}>\S+) by (?P<{}>\S+).*$'.format(
-        TIME, BUILD, TAG, USER,
+        TIME, BUILD, DIRECTION, TAG, USER,
     )
 )
 
@@ -88,8 +91,8 @@ class KojiTagHistory(object):
                 m = m.groupdict()
                 _log.debug(
                     'tag {!r} affected by build {!r} '
-                    'by request of {!r} at {!r}'.format(
-                        m[TAG], m[BUILD], m[USER], m[TIME],
+                    'by {!r} request of {!r} at {!r}'.format(
+                        m[TAG], m[BUILD], m[DIRECTION], m[USER], m[TIME],
                     )
                 )
                 changes.append(m)
@@ -99,11 +102,17 @@ class KojiTagHistory(object):
     def changed_tags(self) -> dict:
         """
         :return:
-            A dict whose keys are tag names that have changed within the
-            specified time span and whose values are another dict whose keys
-            are one of the constants: BUILD or USER.  The values for these are
-            a set of build names or user names respectively that triggered the
-            tag history event.
+            A dict structure containing a set of build names or user names
+            respectively that triggered the tag history event(s).  The dict
+            structure takes the following form:
+
+                TAG:
+                    'in':
+                        BUILD: set
+                        USER: set
+                    'out':
+                        BUILD: set
+                        USER: set
         """
         triggers = {}
         for change in self.__parsed_history:
@@ -112,7 +121,11 @@ class KojiTagHistory(object):
             if tag in self.exclude_tags:
                 continue
             if tag not in triggers:
-                triggers[tag] = {BUILD: set(), USER: set()}
-            triggers[tag][BUILD].add(change[BUILD])
-            triggers[tag][USER].add(change[USER])
+                triggers[tag] = {
+                    TAG_IN: {BUILD: set(), USER: set()},
+                    TAG_OUT: {BUILD: set(), USER: set()},
+                }
+            direction = TAG_IN if 'into' in change[DIRECTION] else TAG_OUT
+            triggers[tag][direction][BUILD].add(change[BUILD])
+            triggers[tag][direction][USER].add(change[USER])
         return triggers
