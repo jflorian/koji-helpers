@@ -160,3 +160,28 @@ class KojiWaitRepo(KojiCommand):
         return '<Koji WaitRepo {!r}>'.format(
             self.tag,
         )
+
+
+class KojiWriteSignedRpm(KojiCommand):
+    """
+    A wrapper around the `koji write-signed-rpm` command.
+    """
+
+    def __init__(self, signature_key: str, nvr):
+        """
+        :param signature_key:
+            The ID of the key that was used for signing.
+
+        :param nvr:
+            A str or list or str with each being one Name-Version-Release value
+            to be written.
+        """
+        self.signature_key = signature_key
+        self.nvr = nvr if isinstance(nvr, list) else [nvr]
+        super().__init__(['write-signed-rpm', self.signature_key] + self.nvr)
+
+    def __str__(self) -> str:
+        return '<Koji WriteSignedRPM {!r} :: {!r}>'.format(
+            self.signature_key,
+            self.nvr,
+        )
