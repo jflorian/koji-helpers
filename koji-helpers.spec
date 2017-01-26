@@ -6,7 +6,7 @@
 %global repomgr_user repomgr
 
 Name:           koji-helpers
-Version:        0.2.0
+Version:        0.3.0
 Release:        1%{?dist}
 
 # {{{1 package meta-data
@@ -128,6 +128,52 @@ exit 0
 
 # {{{1 changelog
 %changelog
+* Wed Jan 25 2017 John Florian <jflorian@doubledog.org> 0.3.0-1
+- Change - [gojira] space delimited buildroot configs (jflorian@doubledog.org)
+- New - [smashd] send email notifications of affected repos
+  (jflorian@doubledog.org)
+- Change - [smashd] classify events as tagging in/out (jflorian@doubledog.org)
+- New - KojiListHistory class (jflorian@doubledog.org)
+- New - KojiWriteSignedRpm class (jflorian@doubledog.org)
+- New - KojiBuildInfo class (jflorian@doubledog.org)
+- Drop - obsolete regen-repos service, bin, config, etc.
+  (jflorian@doubledog.org)
+- New - gojira.service for systemd (jflorian@doubledog.org)
+- New - gojira executable (jflorian@doubledog.org)
+- New - GojiraCLI class (jflorian@doubledog.org)
+- New - GojiraDaemon class (jflorian@doubledog.org)
+- New - BuildRootDependenciesMonitor class (jflorian@doubledog.org)
+- New - koji_helpers.gojira package (jflorian@doubledog.org)
+- New - ModuleNameFilter class (jflorian@doubledog.org)
+- New - KojiHelperLoggerAdapter class (jflorian@doubledog.org)
+- New - KojiCommand class and several sub-classes (jflorian@doubledog.org)
+- Change - redo of Makefile (jflorian@doubledog.org)
+- Change - [smashd] log more clearly when ops are done (jflorian@doubledog.org)
+- Change - [smashd] improve confusing log message (jflorian@doubledog.org)
+- Bug - no such logging handler `short` (jflorian@doubledog.org)
+- Refactor - remove unused SignAndMashDaemon attribute (jflorian@doubledog.org)
+- Janitorial - minor formatting issues (jflorian@doubledog.org)
+- Janitorial - update copyrights (jflorian@doubledog.org)
+- New - logging configuration via YAML (jflorian@doubledog.org)
+- Janitorial - minor reformatting (jflorian@doubledog.org)
+- Refactor - move all smashd modules into new package (jflorian@doubledog.org)
+- Refactor - leverage QuiescenceMonitor (jflorian@doubledog.org)
+- New - Configuration class (jflorian@doubledog.org)
+- Refactor - MashDaemon becomes SignAndMashDaemon (jflorian@doubledog.org)
+- Change - extend smashd to sign as needed (jflorian@doubledog.org)
+- New - Signer class (jflorian@doubledog.org)
+- New - koji_helpers.sign Python package (jflorian@doubledog.org)
+- Bug - mislabeled VIM folding section in spec (jflorian@doubledog.org)
+- Change - smashd obsoletes mash-everything (jflorian@doubledog.org)
+- New - smashd executable -- WIP (jflorian@doubledog.org)
+- New - Masher class (jflorian@doubledog.org)
+- New - MashDaemon class (jflorian@doubledog.org)
+- New - koji_helpers.mash Python package (jflorian@doubledog.org)
+- New - KojiTagHistory class (jflorian@doubledog.org)
+- New - koji_helpers Python package (jflorian@doubledog.org)
+- New - PyCharm deployment configuration (jflorian@doubledog.org)
+- New - PyCharm project configuration (jflorian@doubledog.org)
+
 * Wed Aug 31 2016 John Florian <jflorian@doubledog.org> 0.2.0-1
 - New - mash-everything tool/service (jflorian@doubledog.org)
 - Bug - inaccurate comment (jflorian@doubledog.org)
