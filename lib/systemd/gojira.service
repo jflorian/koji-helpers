@@ -1,9 +1,9 @@
 [Unit]
-Description=Mash Koji builds into usable package repositories
+Description=Gorira to update Koji with changes in external dependencies
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/mash-everything
+ExecStart=/usr/bin/gojira
 Type=simple
 User=repomgr
 
