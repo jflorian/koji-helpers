@@ -157,6 +157,7 @@ class Signer(object):
         _log.info('signing due to {}'.format(self.changes))
         for self._tag, change in self.changes.items():
             self._builds = list(change[TAG_IN][BUILD])
-            if self._sign_builds():
-                self._write_signed_rpms()
+            if self._builds:
+                if self._sign_builds():
+                    self._write_signed_rpms()
         _log.info('signing completed')
