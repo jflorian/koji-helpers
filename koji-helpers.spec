@@ -6,7 +6,7 @@
 %global repomgr_user repomgr
 
 Name:           koji-helpers
-Version:        0.3.0
+Version:        0.3.1
 Release:        1%{?dist}
 
 # {{{1 package meta-data
@@ -128,6 +128,9 @@ exit 0
 
 # {{{1 changelog
 %changelog
+* Wed Jan 25 2017 John Florian <jflorian@doubledog.org> 0.3.1-1
+- Bug - [smashd] don't sign empty build set (jflorian@doubledog.org)
+
 * Wed Jan 25 2017 John Florian <jflorian@doubledog.org> 0.3.0-1
 - Change - [gojira] space delimited buildroot configs (jflorian@doubledog.org)
 - New - [smashd] send email notifications of affected repos
