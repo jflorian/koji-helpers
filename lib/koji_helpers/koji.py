@@ -18,6 +18,7 @@
 # koji-helpers.  If not, see <http://www.gnu.org/licenses/>.
 import re
 from logging import getLogger
+from os.path import basename
 from subprocess import check_output, STDOUT, CalledProcessError
 
 from koji_helpers import KOJI
@@ -105,6 +106,22 @@ class KojiBuildInfo(KojiCommand):
         return '<Koji BuildInfo {!r}>'.format(
             self.nvr,
         )
+
+    @property
+    def rpms(self) -> list:
+        """
+        :return:
+            A list of str, each being one RPM cited in the build info.
+            Remember that each Koji build for NEVR results in one NEVR.src.rpm
+            and one or more NEVR.ARCH.rpm.
+        """
+        rpms, ready = [], False
+        for line in self.output.splitlines():
+            if ready:
+                rpms.append(basename(line.strip()))
+            else:
+                ready |= line.strip() == 'RPMs:'
+        return rpms
 
 
 class KojiTaskInfo(KojiCommand):

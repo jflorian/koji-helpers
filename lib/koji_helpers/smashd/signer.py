@@ -80,22 +80,13 @@ class Signer(object):
         """
         :return:
             A list of str, each being one RPM that resulted from the Koji
-            build task(s).  Remember that each Koji build NEVR can results in
+            build task(s).  Remember that each Koji build for NEVR results in
             one NEVR.src.rpm and one or more NEVR.ARCH.rpm.
         """
         rpms = []
         for build in self._builds:
             _log.debug('getting RPMs for build {!r}'.format(build))
-            info = KojiBuildInfo(build).output
-            ready = False
-            for line in info.splitlines():
-                if ready:
-                    rpm = basename(line.strip())
-                    _log.debug('got RPM {!r}'.format(rpm))
-                    rpms.append(rpm)
-                else:
-                    ready |= line.startswith('RPMs:')
-
+            rpms.extend(KojiBuildInfo(build).rpms)
         return rpms
 
     @property
