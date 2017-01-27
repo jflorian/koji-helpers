@@ -40,19 +40,6 @@
 # package repositories have in common.
 ;repo_dir = /mnt/rpms
 
-# check_interval is the (minimum) number of seconds that smashd is to wait
-# between checks for new tag events.
-;check_interval = 10.0
-
-# Once smashd does detect new tag events, it will start a countdown timer for
-# quiescent_period seconds.  If additional new tag events occur during this
-# period, smashd will restart the countdown timer.  Only once the countdown
-# timer expires without any further new tag events will smashd begin to act
-# upon the events.  Mashing can be an intensive process and this parameter
-# allows you to strike a balance between a responsive smashd process without
-# overly abusing resources.  A value of zero will defeat this feature.
-;quiescent_period = 30.0
-
 # exclude_tags is a space-separated list of tags which smashd should ignore.
 ;exclude_tags = trashcan
 
