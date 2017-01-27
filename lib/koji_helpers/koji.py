@@ -108,17 +108,17 @@ class KojiBuildInfo(KojiCommand):
         )
 
     @property
-    def rpms(self) -> list:
+    def rpms(self) -> set:
         """
         :return:
-            A list of str, each being one RPM cited in the build info.
+            A set of str, each being one RPM cited in the build info.
             Remember that each Koji build for NEVR results in one NEVR.src.rpm
             and one or more NEVR.ARCH.rpm.
         """
-        rpms, ready = [], False
+        rpms, ready = set(), False
         for line in self.output.splitlines():
             if ready:
-                rpms.append(basename(line.strip()))
+                rpms.add(basename(line.strip()))
             else:
                 ready |= line.strip() == 'RPMs:'
         return rpms
@@ -172,6 +172,40 @@ class KojiListHistory(KojiCommand):
             self.after,
             self.before,
         )
+
+
+class KojiListSigned(KojiCommand):
+    """
+    A wrapper around the `koji list-signed` command.
+    """
+
+    def __init__(self, tag: str):
+        """
+        :param tag:
+            Only list RPMs within this tag.
+        """
+        self.tag = tag
+        super().__init__([
+            'list-signed',
+            '--tag={}'.format(self.tag),
+        ])
+
+    def __str__(self) -> str:
+        return '<Koji ListSigned tag={!r}'.format(
+            self.tag,
+        )
+
+    @property
+    def rpms(self) -> set:
+        """
+        :return:
+            A set of str, each being one signed RPM within the tag.
+        """
+        rpms = set()
+        for line in self.output.splitlines():
+            if line.endswith('.rpm'):
+                rpms.add(basename(line.strip()))
+        return rpms
 
 
 class KojiRegenRepo(KojiCommand):
