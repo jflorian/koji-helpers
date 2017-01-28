@@ -18,6 +18,7 @@
 # koji-helpers.  If not, see <http://www.gnu.org/licenses/>.
 import re
 from logging import getLogger
+from os.path import basename
 from subprocess import check_output, STDOUT, CalledProcessError
 
 from koji_helpers import KOJI
@@ -106,6 +107,22 @@ class KojiBuildInfo(KojiCommand):
             self.nvr,
         )
 
+    @property
+    def rpms(self) -> set:
+        """
+        :return:
+            A set of str, each being one RPM cited in the build info.
+            Remember that each Koji build for NEVR results in one NEVR.src.rpm
+            and one or more NEVR.ARCH.rpm.
+        """
+        rpms, ready = set(), False
+        for line in self.output.splitlines():
+            if ready:
+                rpms.add(basename(line.strip()))
+            else:
+                ready |= line.strip() == 'RPMs:'
+        return rpms
+
 
 class KojiTaskInfo(KojiCommand):
     """
@@ -155,6 +172,40 @@ class KojiListHistory(KojiCommand):
             self.after,
             self.before,
         )
+
+
+class KojiListSigned(KojiCommand):
+    """
+    A wrapper around the `koji list-signed` command.
+    """
+
+    def __init__(self, tag: str):
+        """
+        :param tag:
+            Only list RPMs within this tag.
+        """
+        self.tag = tag
+        super().__init__([
+            'list-signed',
+            '--tag={}'.format(self.tag),
+        ])
+
+    def __str__(self) -> str:
+        return '<Koji ListSigned tag={!r}'.format(
+            self.tag,
+        )
+
+    @property
+    def rpms(self) -> set:
+        """
+        :return:
+            A set of str, each being one signed RPM within the tag.
+        """
+        rpms = set()
+        for line in self.output.splitlines():
+            if line.endswith('.rpm'):
+                rpms.add(basename(line.strip()))
+        return rpms
 
 
 class KojiRegenRepo(KojiCommand):

@@ -20,7 +20,7 @@
 from logging import getLogger
 
 from doubledog.html.documents import StrictXHTMLDocument
-from doubledog.html.elements import Body, Heading, Break
+from doubledog.html.elements import Body, Heading, Break, Code
 from doubledog.mail import MiniMailer
 
 from koji_helpers.config import Configuration
@@ -65,20 +65,15 @@ class Notifier(object):
         recipients = self.config.smashd_notifications_to
         _log.info('sending notification to {!r}'.format(recipients))
         body = Body()
-        for tag, change in self.changes.items():
+        for tag in sorted(self.changes.keys()):
             body.append(Heading(2, tag))
-            tag_in_builds = change[TAG_IN][BUILD]
-            if tag_in_builds:
-                body.append(Heading(3, 'arriving'))
-                for build in tag_in_builds:
-                    body.append(build)
-                    body.append(Break())
-            tag_out_builds = change[TAG_OUT][BUILD]
-            if tag_out_builds:
-                body.append(Heading(3, 'departing'))
-                for build in tag_out_builds:
-                    body.append(build)
-                    body.append(Break())
+            for dir_, desc in [(TAG_IN, 'arriving'), (TAG_OUT, 'departing')]:
+                builds = self.changes[tag][dir_][BUILD]
+                if builds:
+                    body.append(Heading(3, desc))
+                    for build in sorted(builds):
+                        body.append(Code(build))
+                        body.append(Break())
         subject = 'Tag events have affected package repositories'
         doc = StrictXHTMLDocument(body, title=subject)
         MiniMailer().send(

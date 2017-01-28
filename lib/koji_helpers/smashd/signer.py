@@ -18,13 +18,12 @@
 # koji-helpers.  If not, see <http://www.gnu.org/licenses/>.
 
 from logging import getLogger
-from os.path import basename
 from subprocess import Popen, PIPE, STDOUT
 
 from koji_helpers import SIGUL
 from koji_helpers.config import Configuration, GPG_KEY_ID, SIGUL_KEY_NAME, \
     SIGUL_KEY_PASS
-from koji_helpers.koji import KojiBuildInfo, KojiWriteSignedRpm
+from koji_helpers.koji import KojiBuildInfo, KojiWriteSignedRpm, KojiListSigned
 from koji_helpers.smashd.tag_history import BUILD, TAG_IN
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
@@ -76,29 +75,6 @@ class Signer(object):
         return self.config.get_repo(self._tag)[GPG_KEY_ID].lower()
 
     @property
-    def _koji_rpms(self) -> list:
-        """
-        :return:
-            A list of str, each being one RPM that resulted from the Koji
-            build task(s).  Remember that each Koji build NEVR can results in
-            one NEVR.src.rpm and one or more NEVR.ARCH.rpm.
-        """
-        rpms = []
-        for build in self._builds:
-            _log.debug('getting RPMs for build {!r}'.format(build))
-            info = KojiBuildInfo(build).output
-            ready = False
-            for line in info.splitlines():
-                if ready:
-                    rpm = basename(line.strip())
-                    _log.debug('got RPM {!r}'.format(rpm))
-                    rpms.append(rpm)
-                else:
-                    ready |= line.startswith('RPMs:')
-
-        return rpms
-
-    @property
     def _sigul_key(self) -> str:
         """
         :return:
@@ -117,15 +93,43 @@ class Signer(object):
         """
         return self.config.get_repo(self._tag)[SIGUL_KEY_PASS]
 
+    def _get_unsigned_rpms(self) -> list:
+        """
+        :return:
+            A list of str, each being one RPM that resulted from the Koji
+            build task(s) which is not yet signed.  Remember that:
+
+            - each Koji build for NEVR results in one NEVR.src.rpm and one or
+            more NEVR.ARCH.rpm.
+
+            - RPMs may already be signed (and excluded in the returned value)
+            because the triggering event may be a move-tag rather than a build
+            proper.
+        """
+        built_rpms = set()
+        for build in self._builds:
+            _log.debug('getting RPMs for build {!r}'.format(build))
+            built_rpms.update(KojiBuildInfo(build).rpms)
+        _log.debug('found built RPMs: {!r}'.format(built_rpms))
+        signed_rpms = KojiListSigned(tag=self._tag).rpms
+        _log.debug('found signed RPMs: {!r}'.format(signed_rpms))
+        unsigned_rpms = built_rpms - signed_rpms
+        _log.debug('giving unsigned RPMs: {!r}'.format(unsigned_rpms))
+        return list(unsigned_rpms)
+
     def _sign_builds(self):
+        unsigned_rpms = self._get_unsigned_rpms()
+        if not unsigned_rpms:
+            _log.info('no builds for tag {!r}s need signing'.format(self._tag))
+            return
         _log.info(
             'signing builds {!r} for tag {!r}'.format(
-                self._builds,
+                unsigned_rpms,
                 self._tag,
             )
         )
         args = [SIGUL, '--batch', 'sign-rpms', '--store-in-koji', '--koji-only',
-                self._sigul_key] + self._koji_rpms
+                self._sigul_key] + unsigned_rpms
         _log.debug('about to call {!r}'.format(args))
         sigul = Popen(args, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
         out, err = sigul.communicate(
@@ -138,13 +142,10 @@ class Signer(object):
                     returncode, out.decode(),
                 )
             )
-            return False
         else:
             for line in out.decode().splitlines():
                 _log.debug('sigul: {}'.format(line))
-            return True
-
-    def _write_signed_rpms(self):
+        # It's probably harmless to continue even if Sigul failed.
         _log.info(
             'writing RPMs for builds {!r} signed with key {!r}'.format(
                 self._builds,
@@ -158,6 +159,5 @@ class Signer(object):
         for self._tag, change in self.changes.items():
             self._builds = list(change[TAG_IN][BUILD])
             if self._builds:
-                if self._sign_builds():
-                    self._write_signed_rpms()
+                self._sign_builds()
         _log.info('signing completed')

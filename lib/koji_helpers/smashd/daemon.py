@@ -31,6 +31,10 @@ from koji_helpers.smashd.notifier import Notifier
 from koji_helpers.smashd.signer import Signer
 from koji_helpers.smashd.tag_history import KojiTagHistory
 
+# This serves as minimum for both the check-interval and quiescence-period.
+# Anything less than this gains little and is abusive.
+MIN_INTERVAL = 5
+
 SMASHD_STATE = '/var/lib/koji-helpers/smashd/state'
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
@@ -64,6 +68,8 @@ class SignAndMashDaemon(object):
             behavior.
         """
         self.config = Configuration(config_name)
+        self._check_interval = MIN_INTERVAL
+        self._monitor = None
         self.__last_run = None
         self.__mark = None
 
@@ -122,37 +128,59 @@ class SignAndMashDaemon(object):
     def __now_iso_format(self):
         return self.__now.isoformat(sep=' ')
 
+    def __adjust_periods(self, elapsed_time):
+        """
+        Adjust the quiescent-period to the length of the last work cycle.
+
+        The check-interval is adjusted to be one quarter of the
+        quiescent-period provided the constraint is not violated.
+
+        Both are constrained to be no less than MIN_INTERVAL seconds.
+        :param elapsed_time:
+            timedelta of the last work cycle.
+        """
+        self._monitor.period = max(MIN_INTERVAL, elapsed_time.total_seconds())
+        self._check_interval = max(MIN_INTERVAL, self._monitor.period / 4)
+        _log.info(
+            'check_interval/quiescent_period adjusted to '
+            '{:0,.1f}/{:0,.1f} seconds'.format(
+                self._check_interval,
+                self._monitor.period,
+            ),
+        )
+
     def __get_present_changes(self):
         hist = KojiTagHistory(self.last_run, self.__mark,
                               self.config.smashd_exclude_tags)
         return hist.changed_tags
 
     def __rest(self):
-        period = self.config.smashd_check_interval
-        _log.debug('sleeping {} seconds'.format(period))
-        sleep(period)
+        _log.debug('sleeping {} seconds'.format(self._check_interval))
+        sleep(self._check_interval)
 
     def run(self):
         _log.info('started; waiting for tag events')
         changes = {}
-        monitor = QuiescenceMonitor(self.config.smashd_quiescent_period,
-                                    changes)
+        self._monitor = QuiescenceMonitor(MIN_INTERVAL, changes)
         while True:
             self.__mark = self.__now_iso_format
             _log.debug(
                 'checking for tag events since {!r}'.format(self.last_run)
             )
             changes = self.__get_present_changes()
-            monitor.update(changes)
+            self._monitor.update(changes)
             if changes:
                 _log.debug('new tag events detected')
-                if monitor.has_quiesced:
+                if self._monitor.has_quiesced:
                     _log.debug('quiescence achieved')
+                    start_time = self.__now
                     Signer(changes, self.config)
                     tags = changes.keys()
                     Masher(tags, self.config)
+                    elapsed_time = self.__now - start_time
                     self.last_run = self.__mark
                     Notifier(changes, self.config)
+                    self.__adjust_periods(elapsed_time)
                 else:
                     _log.debug('awaiting quiescence')
             self.__rest()

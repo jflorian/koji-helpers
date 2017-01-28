@@ -19,6 +19,7 @@
 
 import json
 import os
+from datetime import datetime
 from logging import getLogger
 from subprocess import CalledProcessError
 from threading import Thread
@@ -30,6 +31,10 @@ from doubledog.quiescence import QuiescenceMonitor
 from koji_helpers.config import Configuration
 from koji_helpers.koji import KojiRegenRepo, KojiWaitRepo, KojiTaskInfo
 from koji_helpers.logging import KojiHelperLoggerAdapter
+
+# This serves as minimum for both the check-interval and quiescence-period.
+# Anything less than this gains little and is abusive.
+MIN_INTERVAL = 60
 
 GOJIRA_STATE = '/var/lib/koji-helpers/gojira/'
 
@@ -61,6 +66,8 @@ class BuildRootDependenciesMonitor(Thread):
         super().__init__()
         self.buildroot = buildroot
         self.config = config
+        self._check_interval = MIN_INTERVAL
+        self._monitor = None
         self._log = KojiHelperLoggerAdapter(
             getLogger(__name__),
             {'name': str(self)},
@@ -143,6 +150,27 @@ class BuildRootDependenciesMonitor(Thread):
                 url = url.replace('$basearch', arch)
                 yield url
 
+    def __adjust_periods(self, elapsed_time):
+        """
+        Adjust the quiescent-period to the length of the last work cycle.
+
+        The check-interval is adjusted to be one quarter of the
+        quiescent-period provided the constraint is not violated.
+
+        Both are constrained to be no less than MIN_INTERVAL seconds.
+        :param elapsed_time:
+            timedelta of the last work cycle.
+        """
+        self._monitor.period = max(MIN_INTERVAL, elapsed_time.total_seconds())
+        self._check_interval = max(MIN_INTERVAL, self._monitor.period / 4)
+        self._log.info(
+            'check_interval/quiescent_period adjusted to '
+            '{:0,.1f}/{:0,.1f} seconds'.format(
+                self._check_interval,
+                self._monitor.period,
+            ),
+        )
+
     def __get_present_metadata(self) -> dict:
         """
         :return:
@@ -200,9 +228,8 @@ class BuildRootDependenciesMonitor(Thread):
         self._log.info('newRepo task {!r} ended as {!r}'.format(task_id, state))
 
     def __rest(self):
-        period = self.config.gojira_check_interval
-        self._log.debug('sleeping {} seconds'.format(period))
-        sleep(period)
+        self._log.debug('sleeping {} seconds'.format(self._check_interval))
+        sleep(self._check_interval)
 
     def run(self):
         """
@@ -215,20 +242,20 @@ class BuildRootDependenciesMonitor(Thread):
         """
         self._log.info('started; waiting for changes in external repos')
         changes = {}
-        monitor = QuiescenceMonitor(self.config.gojira_quiescent_period,
-                                    changes)
+        self._monitor = QuiescenceMonitor(MIN_INTERVAL, changes)
         while True:
             self._log.debug('checking for changes in external repos')
             self.__mark = self.__get_present_metadata()
             changes = self.__get_changes()
             self._log.debug('present changes are {!r}'.format(changes))
-            monitor.update(changes)
+            self._monitor.update(changes)
             if changes:
                 self._log.debug('external repos changed; awaiting quiescence')
-                if monitor.has_quiesced:
+                if self._monitor.has_quiesced:
                     self._log.debug('quiescence achieved')
                     self._log.info('triggering regen due to {}'.format(changes))
                     try:
+                        start_time = datetime.now()
                         self.__regen_repo()
                     except CalledProcessError as e:
                         self._log.error(
@@ -239,4 +266,6 @@ class BuildRootDependenciesMonitor(Thread):
                         )
                     else:
                         self.last_metadata = self.__mark
+                        elapsed_time = datetime.now() - start_time
+                        self.__adjust_periods(elapsed_time)
             self.__rest()
