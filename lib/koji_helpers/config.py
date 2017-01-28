@@ -73,8 +73,6 @@ class Configuration(object):
         _log.debug('{} reading'.format(self))
         config = ConfigParser()
         config.read(self.filename)
-        self.gojira_check_interval = config.getfloat(GOJIRA, CHECK_INTERVAL)
-        self.gojira_quiescent_period = config.getfloat(GOJIRA, QUIESCENT_PERIOD)
         self.smashd_exclude_tags = config.get(SMASHD, EXCLUDE_TAGS).split()
         self.smashd_repo_dir = config.get(SMASHD, REPO_DIR)
         self.smashd_notifications_from = config.get(SMASHD, NOTIFICATIONS_FROM)
