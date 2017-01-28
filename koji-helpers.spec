@@ -6,7 +6,7 @@
 %global repomgr_user repomgr
 
 Name:           koji-helpers
-Version:        0.3.1
+Version:        0.4.0
 Release:        1%{?dist}
 
 # {{{1 package meta-data
@@ -128,6 +128,13 @@ exit 0
 
 # {{{1 changelog
 %changelog
+* Fri Jan 27 2017 John Florian <jflorian@doubledog.org> 0.4.0-1
+- New - [gojira] dynamic quiescent-period adjustment (jflorian@doubledog.org)
+- New - [smashd] dynamic quiescent-period adjustment (jflorian@doubledog.org)
+- Change - [smashd] only sign unsigned RPMs (jflorian@doubledog.org)
+- Refactor - intro KojiBuildInfo.rpms property (jflorian@doubledog.org)
+- Change - [smashd] sorted notifications, code font (jflorian@doubledog.org)
+
 * Wed Jan 25 2017 John Florian <jflorian@doubledog.org> 0.3.1-1
 - Bug - [smashd] don't sign empty build set (jflorian@doubledog.org)
 
