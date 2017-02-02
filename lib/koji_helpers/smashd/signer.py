@@ -18,12 +18,13 @@
 # koji-helpers.  If not, see <http://www.gnu.org/licenses/>.
 
 from logging import getLogger
-from subprocess import Popen, PIPE, STDOUT
+from subprocess import PIPE, Popen, STDOUT
 
 from koji_helpers import SIGUL
-from koji_helpers.config import Configuration, GPG_KEY_ID, SIGUL_KEY_NAME, \
-    SIGUL_KEY_PASS
-from koji_helpers.koji import KojiBuildInfo, KojiWriteSignedRpm, KojiListSigned
+from koji_helpers.config import (
+    Configuration, GPG_KEY_ID, SIGUL_KEY_NAME, SIGUL_KEY_PASS,
+)
+from koji_helpers.koji import KojiBuildInfo, KojiListSigned, KojiWriteSignedRpm
 from koji_helpers.smashd.tag_history import BUILD, TAG_IN
 
 __author__ = """John Florian <jflorian@doubledog.org>"""

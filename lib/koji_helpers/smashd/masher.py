@@ -18,7 +18,7 @@
 # koji-helpers.  If not, see <http://www.gnu.org/licenses/>.
 import os
 from logging import getLogger
-from subprocess import check_output, CalledProcessError, STDOUT
+from subprocess import CalledProcessError, STDOUT, check_output
 from tempfile import TemporaryDirectory
 
 from koji_helpers import MASH, RSYNC

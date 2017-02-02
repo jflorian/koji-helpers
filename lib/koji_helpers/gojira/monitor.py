@@ -29,7 +29,7 @@ import requests
 from doubledog.quiescence import QuiescenceMonitor
 
 from koji_helpers.config import Configuration
-from koji_helpers.koji import KojiRegenRepo, KojiWaitRepo, KojiTaskInfo
+from koji_helpers.koji import KojiRegenRepo, KojiTaskInfo, KojiWaitRepo
 from koji_helpers.logging import KojiHelperLoggerAdapter
 
 # This serves as minimum for both the check-interval and quiescence-period.

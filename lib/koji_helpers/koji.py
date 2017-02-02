@@ -19,7 +19,7 @@
 import re
 from logging import getLogger
 from os.path import basename
-from subprocess import check_output, STDOUT, CalledProcessError
+from subprocess import CalledProcessError, STDOUT, check_output
 
 from koji_helpers import KOJI
 from koji_helpers.logging import KojiHelperLoggerAdapter
