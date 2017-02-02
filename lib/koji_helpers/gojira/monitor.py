@@ -86,7 +86,7 @@ class BuildRootDependenciesMonitor(Thread):
         )
 
     def __str__(self) -> str:
-        return 'BuildRoot Deps Monitor for {!r}'.format(
+        return 'Gojira Monitor for {!r}'.format(
             self.buildroot,
         )
 
@@ -164,7 +164,7 @@ class BuildRootDependenciesMonitor(Thread):
         self._monitor.period = max(MIN_INTERVAL, elapsed_time.total_seconds())
         self._check_interval = max(MIN_INTERVAL, self._monitor.period / 4)
         self._log.info(
-            'check_interval/quiescent_period adjusted to '
+            'check-interval/quiescent-period adjusted to '
             '{:0,.1f}/{:0,.1f} seconds'.format(
                 self._check_interval,
                 self._monitor.period,
