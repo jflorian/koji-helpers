@@ -6,7 +6,7 @@
 %global repomgr_user repomgr
 
 Name:           koji-helpers
-Version:        0.4.0
+Version:        0.5.0
 Release:        1%{?dist}
 
 # {{{1 package meta-data
@@ -128,6 +128,11 @@ exit 0
 
 # {{{1 changelog
 %changelog
+* Thu Feb 02 2017 John Florian <jflorian@doubledog.org> 0.5.0-1
+- Janitorial - global code reformat (jflorian@doubledog.org)
+- New - [smashd] colorize mail notifications (jflorian@doubledog.org)
+- Change - minor improvements to logged messages (jflorian@doubledog.org)
+
 * Fri Jan 27 2017 John Florian <jflorian@doubledog.org> 0.4.0-1
 - New - [gojira] dynamic quiescent-period adjustment (jflorian@doubledog.org)
 - New - [smashd] dynamic quiescent-period adjustment (jflorian@doubledog.org)

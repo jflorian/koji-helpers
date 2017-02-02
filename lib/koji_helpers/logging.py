@@ -16,7 +16,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # koji-helpers.  If not, see <http://www.gnu.org/licenses/>.
-from logging import LoggerAdapter, Filter
+from logging import Filter, LoggerAdapter
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
 __copyright__ = """2017 John Florian"""
@@ -30,6 +30,7 @@ class KojiHelperLoggerAdapter(LoggerAdapter):
     provides additional context where individual object instances may need to
     distinguish themselves from their peers.
     """
+
     def process(self, msg, kwargs):
         return '{}:  {}'.format(self.extra['name'], msg), kwargs
 
