@@ -6,7 +6,7 @@
 %global repomgr_user repomgr
 
 Name:           koji-helpers
-Version:        0.5.1
+Version:        0.5.2
 Release:        1%{?dist}
 
 # {{{1 package meta-data
@@ -130,6 +130,9 @@ exit 0
 
 # {{{1 changelog
 %changelog
+* Mon Feb 06 2017 John Florian <jflorian@doubledog.org> 0.5.2-1
+- New - include LICENSE file (jflorian@doubledog.org)
+
 * Mon Feb 06 2017 John Florian <jflorian@doubledog.org> 0.5.1-1
 - New - include LICENSE file (jflorian@doubledog.org)
 
