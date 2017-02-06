@@ -111,6 +111,8 @@ exit 0
 
 %doc doc/AUTHOR doc/COPYING
 
+%license LICENSE
+
 %{_bindir}/gojira
 %{_bindir}/smashd
 %{_unitdir}/gojira.service
