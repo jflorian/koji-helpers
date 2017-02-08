@@ -190,11 +190,17 @@ class BuildRootDependenciesMonitor(Thread):
         metadata = {}
         for url in self.dependency_urls:
             self._log.debug('fetching headers for {!r}'.format(url))
-            response = requests.head(url)
-            metadata[url] = [
-                response.headers['etag'],
-                response.headers['last-modified'],
-            ]
+            try:
+                response = requests.head(url)
+            except requests.ConnectionError as e:
+                self._log.error(
+                    '{}; check your configuration; ignoring this URL'.format(e)
+                )
+            else:
+                metadata[url] = [
+                    response.headers['etag'],
+                    response.headers['last-modified'],
+                ]
         return metadata
 
     def __get_changes(self) -> dict:
