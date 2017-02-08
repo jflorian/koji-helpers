@@ -6,7 +6,7 @@
 %global repomgr_user repomgr
 
 Name:           koji-helpers
-Version:        0.5.2
+Version:        0.6.0
 Release:        1%{?dist}
 
 # {{{1 package meta-data
@@ -130,6 +130,10 @@ exit 0
 
 # {{{1 changelog
 %changelog
+* Wed Feb 08 2017 John Florian <jflorian@doubledog.org> 0.6.0-1
+- Bug - [gojira] connection errors are fatal (jflorian@doubledog.org)
+- New - better handling of configuration errors (jflorian@doubledog.org)
+
 * Mon Feb 06 2017 John Florian <jflorian@doubledog.org> 0.5.2-1
 - New - include LICENSE file (jflorian@doubledog.org)
 
