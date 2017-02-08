@@ -16,8 +16,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # koji-helpers.  If not, see <http://www.gnu.org/licenses/>.
-
-from configparser import ConfigParser
+import configparser
 from logging import getLogger
 
 from koji_helpers import CONFIG
@@ -46,6 +45,10 @@ __copyright__ = """2016-2017 John Florian"""
 _log = getLogger(__name__)
 
 
+class ConfigurationError(Exception):
+    pass
+
+
 class Configuration(object):
     """
     Configuration for the koji-helpers tools.
@@ -71,22 +74,29 @@ class Configuration(object):
 
     def __read(self):
         _log.debug('{} reading'.format(self))
-        config = ConfigParser()
-        config.read(self.filename)
-        self.smashd_exclude_tags = config.get(SMASHD, EXCLUDE_TAGS).split()
-        self.smashd_repo_dir = config.get(SMASHD, REPO_DIR)
-        self.smashd_notifications_from = config.get(SMASHD, NOTIFICATIONS_FROM)
-        self.smashd_notifications_to = config.get(SMASHD,
-                                                  NOTIFICATIONS_TO).split()
-        self.__buildroots = {}
-        self.__repos = {}
-        for section in config.sections():
-            if section.startswith(BUILDROOT_PREFIX):
-                koji_tag = section[len(BUILDROOT_PREFIX):]
-                self.__buildroots[koji_tag] = config[section]
-            elif section.startswith(REPOSITORY_PREFIX):
-                koji_tag = section[len(REPOSITORY_PREFIX):]
-                self.__repos[koji_tag] = config[section]
+        config = configparser.ConfigParser()
+        try:
+            config.read(self.filename)
+            self.smashd_exclude_tags = config.get(SMASHD, EXCLUDE_TAGS).split()
+            self.smashd_repo_dir = config.get(SMASHD, REPO_DIR)
+            self.smashd_notifications_from = config.get(SMASHD,
+                                                        NOTIFICATIONS_FROM)
+            self.smashd_notifications_to = config.get(SMASHD,
+                                                      NOTIFICATIONS_TO).split()
+            self.__buildroots = {}
+            self.__repos = {}
+            for section in config.sections():
+                if section.startswith(BUILDROOT_PREFIX):
+                    koji_tag = section[len(BUILDROOT_PREFIX):]
+                    self.__buildroots[koji_tag] = config[section]
+                elif section.startswith(REPOSITORY_PREFIX):
+                    koji_tag = section[len(REPOSITORY_PREFIX):]
+                    self.__repos[koji_tag] = config[section]
+        except configparser.Error as e:
+            raise ConfigurationError(
+                'bad configuration: {}'.format(e)
+            ) from None
+
         _log.debug(
             '{} configured {:,d} repos and {:,d} buildroots'.format(
                 self,
@@ -120,7 +130,12 @@ class Configuration(object):
         :return:
             The configuration for the named buildroot.
         """
-        return self.__buildroots[name]
+        try:
+            return self.__buildroots[name]
+        except KeyError:
+            raise ConfigurationError(
+                'missing buildroot configuration for {!r}'.format(name)
+            ) from None
 
     def get_repo(self, name: str):
         """
@@ -129,4 +144,9 @@ class Configuration(object):
         :return:
             The configuration for the named repository.
         """
-        return self.__repos[name]
+        try:
+            return self.__repos[name]
+        except KeyError:
+            raise ConfigurationError(
+                'missing repository configuration for {!r}'.format(name)
+            ) from None
