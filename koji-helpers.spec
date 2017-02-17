@@ -103,7 +103,6 @@ exit 0
 
 # {{{1 files
 %files
-%defattr(-,root,root,-)
 
 %config(noreplace) %{_sysconfdir}/%{name}/logging.yaml
 
