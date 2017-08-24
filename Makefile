@@ -1,3 +1,7 @@
+# vim: foldmethod=marker
+
+# Standard spec file parsing {{{1
+
 SPECFILE = $(firstword $(wildcard *.spec))
 
 # If there are sub-packages, assume the first is appropriate in forming NVR.
@@ -16,6 +20,8 @@ RELEASE := $(call queryspec,RELEASE)
 # The treeish we'll archive is effectively the Git tag that tito created.
 TREEISH := ${NAME}-${VERSION}-${RELEASE}
 
+# Standard targets {{{1
+
 # target: help - Show all callable targets.
 help:
 	@grep -P '^#\s*target:\s*' Makefile | sort
@@ -29,3 +35,7 @@ tarball:
 		--output=${NAME}-${VERSION}.tar.gz \
 		--prefix=${NAME}-${VERSION}/ \
 		${TREEISH}
+
+# Project specific variables {{{1
+
+# Project specific targets {{{1
