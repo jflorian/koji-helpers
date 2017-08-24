@@ -1,4 +1,4 @@
-specfile = $(firstword $(wildcard *.spec))
+SPECFILE = $(firstword $(wildcard *.spec))
 
 # If there are sub-packages, assume the first is appropriate in forming NVR.
 # The dist macro is defined as a null string because it's normal value is
@@ -6,20 +6,20 @@ specfile = $(firstword $(wildcard *.spec))
 queryspec = $(firstword \
 				$(shell rpm --query --queryformat "%{$(1)}\n" \
 							--define="dist %{nil}" \
-							--specfile $(specfile)) \
+							--specfile $(SPECFILE)) \
 			)
 
-name := $(call queryspec,NAME)
-version := $(call queryspec,VERSION)
-release := $(call queryspec,RELEASE)
+NAME := $(call queryspec,NAME)
+VERSION := $(call queryspec,VERSION)
+RELEASE := $(call queryspec,RELEASE)
 
 # The treeish we'll archive is effectively the Git tag that tito created.
-treeish := ${name}-${version}-${release}
+TREEISH := ${NAME}-${VERSION}-${RELEASE}
 
 sources: tarball
 
 tarball:
 	@git archive \
-		--output=${name}-${version}.tar.gz \
-		--prefix=${name}-${version}/ \
-		${treeish}
+		--output=${NAME}-${VERSION}.tar.gz \
+		--prefix=${NAME}-${VERSION}/ \
+		${TREEISH}
