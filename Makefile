@@ -26,6 +26,9 @@ TREEISH := ${NAME}-${VERSION}-${RELEASE}
 help:
 	@grep -P '^#\s*target:\s*' Makefile | sort
 
+# target: clean - Remove all build and testing artifacts.
+clean: clean-doc clean-pyc
+
 # target: sources - Produce all forms of source distribution.
 sources: tarball
 
@@ -39,3 +42,13 @@ tarball:
 # Project specific variables {{{1
 
 # Project specific targets {{{1
+
+# target: clean-doc - Remove all documentation build artifacts.
+clean-doc:
+	@echo Removing all documentation build artifacts...
+	rm -rf doc/html/
+
+# target: clean-pyc - Remove all Python bytecode build artifacts.
+clean-pyc:
+	@echo Removing all Python bytecode build artifacts...
+	find . -name '*.pyc' -delete
