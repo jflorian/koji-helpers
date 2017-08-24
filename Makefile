@@ -19,7 +19,7 @@ TREEISH := ${NAME}-${VERSION}-${RELEASE}
 sources: tarball
 
 tarball:
-	@git archive \
+	git archive \
 		--output=${NAME}-${VERSION}.tar.gz \
 		--prefix=${NAME}-${VERSION}/ \
 		${TREEISH}
