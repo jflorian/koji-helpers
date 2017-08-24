@@ -16,8 +16,14 @@ RELEASE := $(call queryspec,RELEASE)
 # The treeish we'll archive is effectively the Git tag that tito created.
 TREEISH := ${NAME}-${VERSION}-${RELEASE}
 
+# target: help - Show all callable targets.
+help:
+	@grep -P '^#\s*target:\s*' Makefile | sort
+
+# target: sources - Produce all forms of source distribution.
 sources: tarball
 
+# target: tarball - Produce tarball of source distribution.
 tarball:
 	git archive \
 		--output=${NAME}-${VERSION}.tar.gz \
