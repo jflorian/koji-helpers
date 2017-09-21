@@ -248,31 +248,39 @@ class BuildRootDependenciesMonitor(Thread):
         :method:`start` method should be called.
         """
         self._log.info('started; waiting for changes in external repos')
-        changes = {}
-        self._monitor = QuiescenceMonitor(MIN_INTERVAL, changes)
-        while True:
-            self._log.debug('checking for changes in external repos')
-            self.__mark = self.__get_present_metadata()
-            changes = self.__get_changes()
-            self._log.debug('present changes are {!r}'.format(changes))
-            self._monitor.update(changes)
-            if changes:
-                self._log.debug('external repos changed; awaiting quiescence')
-                if self._monitor.has_quiesced:
-                    self._log.debug('quiescence achieved')
-                    self._log.info('triggering regen due to {}'.format(changes))
-                    try:
-                        start_time = datetime.now()
-                        self.__regen_repo()
-                    except CalledProcessError as e:
-                        self._log.error(
-                            'regen failed: {}; output was:\n{}'.format(
-                                e,
-                                e.output.decode()
-                            )
+        # noinspection PyBroadException
+        try:
+            changes = {}
+            self._monitor = QuiescenceMonitor(MIN_INTERVAL, changes)
+            while True:
+                self._log.debug('checking for changes in external repos')
+                self.__mark = self.__get_present_metadata()
+                changes = self.__get_changes()
+                self._log.debug('present changes are {!r}'.format(changes))
+                self._monitor.update(changes)
+                if changes:
+                    self._log.debug(
+                        'external repos changed; awaiting quiescence'
+                    )
+                    if self._monitor.has_quiesced:
+                        self._log.debug('quiescence achieved')
+                        self._log.info(
+                            'triggering regen due to {}'.format(changes)
                         )
-                    else:
-                        self.last_metadata = self.__mark
-                        elapsed_time = datetime.now() - start_time
-                        self.__adjust_periods(elapsed_time)
-            self.__rest()
+                        try:
+                            start_time = datetime.now()
+                            self.__regen_repo()
+                        except CalledProcessError as e:
+                            self._log.error(
+                                'regen failed: {}; output was:\n{}'.format(
+                                    e,
+                                    e.output.decode()
+                                )
+                            )
+                        else:
+                            self.last_metadata = self.__mark
+                            elapsed_time = datetime.now() - start_time
+                            self.__adjust_periods(elapsed_time)
+                self.__rest()
+        except Exception:
+            self._log.exception('died due to unhandled exception')
