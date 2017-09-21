@@ -23,6 +23,11 @@ formatters:
         format:         '{levelname} - {message}'
         style:          '{'
 
+    syslog:
+        format:         '[{name}] {levelname} - {message}'
+        style:          '{'
+        datefmt:
+
     # Want more context?  No need to change the format here.  Just use:
     #       journalctl -o verbose
     #
@@ -42,12 +47,13 @@ handlers:
 #       class:          systemd.journal.JournalHandler
 #       level:          DEBUG
 #       formatter:      systemd
-    journal:
+
+    syslog:
         class:          logging.StreamHandler
         filters:        [exclude_requests]
-        formatter:      systemd
+        formatter:      syslog
         level:          INFO
 
 root:
     level:              DEBUG
-    handlers:           [journal]
+    handlers:           [syslog]
