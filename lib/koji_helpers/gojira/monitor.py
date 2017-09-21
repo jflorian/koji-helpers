@@ -66,6 +66,7 @@ class BuildRootDependenciesMonitor(Thread):
         super().__init__()
         self.buildroot = buildroot
         self.config = config
+        self.name = str(self)
         self._check_interval = MIN_INTERVAL
         self._monitor = None
         self._log = KojiHelperLoggerAdapter(
