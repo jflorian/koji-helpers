@@ -66,6 +66,7 @@ class BuildRootDependenciesMonitor(Thread):
         super().__init__()
         self.buildroot = buildroot
         self.config = config
+        self.name = str(self)
         self._check_interval = MIN_INTERVAL
         self._monitor = None
         self._log = KojiHelperLoggerAdapter(
@@ -171,8 +172,15 @@ class BuildRootDependenciesMonitor(Thread):
             ),
         )
 
-    def __get_present_metadata(self) -> dict:
+    def __get_present_metadata(self, retries: int = 3, rest: int = 10) -> dict:
         """
+        :param retries:
+            The maximum number of attempts to be made per each URL before giving
+            up.
+
+        :param rest:
+            The number of seconds to rest before retrying any failed operation.
+
         :return:
             A dict whose keys are the URLs of the external package repositories
             being monitored and whose values are a [str, str] list carrying
@@ -190,17 +198,36 @@ class BuildRootDependenciesMonitor(Thread):
         metadata = {}
         for url in self.dependency_urls:
             self._log.debug('fetching headers for {!r}'.format(url))
-            try:
-                response = requests.head(url)
-            except requests.ConnectionError as e:
-                self._log.error(
-                    '{}; check your configuration; ignoring this URL'.format(e)
-                )
-            else:
-                metadata[url] = [
-                    response.headers['etag'],
-                    response.headers['last-modified'],
-                ]
+            ok = False
+            for retry in range(retries):
+                if retry:
+                    self._log.info(
+                        'will retry {}/{} in {} seconds'.format(retry, retries,
+                                                                rest)
+                    )
+                    sleep(rest)
+                try:
+                    response = requests.head(url)
+                except requests.ConnectionError as e:
+                    self._log.warning('{}; check your configuration'.format(e))
+                else:
+                    try:
+                        metadata[url] = [
+                            response.headers['etag'],
+                            response.headers['last-modified'],
+                        ]
+                    except KeyError as e:
+                        self._log.warning(
+                            '{} not in HTTP HEAD for {!r}'.format(e, url)
+                        )
+                    else:
+                        if retry:
+                            self._log.info('success, at last')
+                        ok = True
+                        break
+            if not ok:
+                self._log.error('ignoring this URL for this refresh cycle')
+                break
         return metadata
 
     def __get_changes(self) -> dict:
@@ -247,31 +274,39 @@ class BuildRootDependenciesMonitor(Thread):
         :method:`start` method should be called.
         """
         self._log.info('started; waiting for changes in external repos')
-        changes = {}
-        self._monitor = QuiescenceMonitor(MIN_INTERVAL, changes)
-        while True:
-            self._log.debug('checking for changes in external repos')
-            self.__mark = self.__get_present_metadata()
-            changes = self.__get_changes()
-            self._log.debug('present changes are {!r}'.format(changes))
-            self._monitor.update(changes)
-            if changes:
-                self._log.debug('external repos changed; awaiting quiescence')
-                if self._monitor.has_quiesced:
-                    self._log.debug('quiescence achieved')
-                    self._log.info('triggering regen due to {}'.format(changes))
-                    try:
-                        start_time = datetime.now()
-                        self.__regen_repo()
-                    except CalledProcessError as e:
-                        self._log.error(
-                            'regen failed: {}; output was:\n{}'.format(
-                                e,
-                                e.output.decode()
-                            )
+        # noinspection PyBroadException
+        try:
+            changes = {}
+            self._monitor = QuiescenceMonitor(MIN_INTERVAL, changes)
+            while True:
+                self._log.debug('checking for changes in external repos')
+                self.__mark = self.__get_present_metadata()
+                changes = self.__get_changes()
+                self._log.debug('present changes are {!r}'.format(changes))
+                self._monitor.update(changes)
+                if changes:
+                    self._log.debug(
+                        'external repos changed; awaiting quiescence'
+                    )
+                    if self._monitor.has_quiesced:
+                        self._log.debug('quiescence achieved')
+                        self._log.info(
+                            'triggering regen due to {}'.format(changes)
                         )
-                    else:
-                        self.last_metadata = self.__mark
-                        elapsed_time = datetime.now() - start_time
-                        self.__adjust_periods(elapsed_time)
-            self.__rest()
+                        try:
+                            start_time = datetime.now()
+                            self.__regen_repo()
+                        except CalledProcessError as e:
+                            self._log.error(
+                                'regen failed: {}; output was:\n{}'.format(
+                                    e,
+                                    e.output.decode()
+                                )
+                            )
+                        else:
+                            self.last_metadata = self.__mark
+                            elapsed_time = datetime.now() - start_time
+                            self.__adjust_periods(elapsed_time)
+                self.__rest()
+        except Exception:
+            self._log.exception('died due to unhandled exception')
