@@ -6,7 +6,7 @@
 %global repomgr_user repomgr
 
 Name:           koji-helpers
-Version:        0.6.0
+Version:        0.6.1
 Release:        1%{?dist}
 
 # {{{1 package meta-data
@@ -129,6 +129,24 @@ exit 0
 
 # {{{1 changelog
 %changelog
+* Tue Sep 26 2017 John Florian <jflorian@doubledog.org> 0.6.1-1
+- New - [tito] test-all target (jflorian@doubledog.org)
+- Bug - [Makefile] queryspec returns partial value (jflorian@doubledog.org)
+- New - [Makefile] 'dist' target (jflorian@doubledog.org)
+- New - [Makefile] 'clean' target (jflorian@doubledog.org)
+- New - [Makefile] vim folding for better organization (jflorian@doubledog.org)
+- New - [Makefile] 'help' target (jflorian@doubledog.org)
+- Change - [Makefile] don't hide exec of 'git archive' (jflorian@doubledog.org)
+- Refactor - [Makefile] rename all vars (jflorian@doubledog.org)
+- Bug - [gojira] Thread dies with incomplete metadata (jflorian@doubledog.org)
+- Bug - [gojira] Thread exceptions may not be logged (jflorian@doubledog.org)
+- Change - give Gorjira threads a meaningful name (jflorian@doubledog.org)
+- Change - logging to syslog doesn't capture level (jflorian@doubledog.org)
+- Drop - default defattr directive (jflorian@doubledog.org)
+- Bug - [smashd] repoview is not updated in public view
+  (jflorian@doubledog.org)
+- Drop - Dart-specific tito releasers (jflorian@doubledog.org)
+
 * Wed Feb 08 2017 John Florian <jflorian@doubledog.org> 0.6.0-1
 - Bug - [gojira] connection errors are fatal (jflorian@doubledog.org)
 - New - better handling of configuration errors (jflorian@doubledog.org)
@@ -199,22 +217,3 @@ exit 0
 - New - koji_helpers Python package (jflorian@doubledog.org)
 - New - PyCharm deployment configuration (jflorian@doubledog.org)
 - New - PyCharm project configuration (jflorian@doubledog.org)
-
-* Wed Aug 31 2016 John Florian <jflorian@doubledog.org> 0.2.0-1
-- New - mash-everything tool/service (jflorian@doubledog.org)
-- Bug - inaccurate comment (jflorian@doubledog.org)
-- Change - regen-repos checksum_of() implementation (jflorian@doubledog.org)
-- Bug - regen-repos saving state in wrong directory (jflorian@doubledog.org)
-- Change - logging priority levels to be more appropriate
-  (jflorian@doubledog.org)
-- Change - resolve a number of shellcheck warnings (jflorian@doubledog.org)
-
-* Mon Aug 29 2016 John Florian <jflorian@doubledog.org> 0.1.0-2
-- Bug - missing Makefile for KojiGitReleaser (jflorian@doubledog.org)
-
-* Mon Aug 29 2016 John Florian <jflorian@doubledog.org> 0.1.0-1
-- new package built with tito
-
-* Mon Aug 29 2016 John Florian <jflorian@doubledog.org>
-- new package built with tito
-
