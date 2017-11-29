@@ -7,4 +7,12 @@ changelog_format = %s (%ae)
 [epel7]
 disttag = .el7.centos
 
-# vim: filetype=configparser
+[f25]
+disttag = .fc25
+
+[f26]
+disttag = .fc26
+
+[f27]
+disttag = .fc27
+
