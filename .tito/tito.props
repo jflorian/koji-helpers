@@ -7,9 +7,6 @@ changelog_format = %s (%ae)
 [epel7]
 disttag = .el7.centos
 
-[f25]
-disttag = .fc25
-
 [f26]
 disttag = .fc26
 
