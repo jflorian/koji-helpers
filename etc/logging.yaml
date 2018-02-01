@@ -3,12 +3,6 @@
 version:                    1
 disable_existing_loggers:   False
 
-filters:
-
-    exclude_requests:
-        ():             koji_helpers.logging.ModuleNameFilter
-        exclude:        ['doubledog/quiescence.py', 'requests/packages/urllib3/connectionpool.py']
-
 formatters:
 
     file:
@@ -50,9 +44,16 @@ handlers:
 
     syslog:
         class:          logging.StreamHandler
-        filters:        [exclude_requests]
         formatter:      syslog
         level:          INFO
+
+loggers:
+    doubledog.quiescence:
+        level:          WARNING
+        propagate:      no
+    requests:
+        level:          WARNING
+        propagate:      no
 
 root:
     level:              DEBUG

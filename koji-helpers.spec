@@ -6,7 +6,7 @@
 %global repomgr_user repomgr
 
 Name:           koji-helpers
-Version:        0.6.1
+Version:        0.6.2
 Release:        1%{?dist}
 
 # {{{1 package meta-data
@@ -129,6 +129,12 @@ exit 0
 
 # {{{1 changelog
 %changelog
+* Thu Feb 01 2018 John Florian <jflorian@doubledog.org> 0.6.2-1
+- Drop - [tito] Fedora 25 release target (jflorian@doubledog.org)
+- Change - replace logging filter with simpler setup (jflorian@doubledog.org)
+- Bug - smashd misconfig handled poorly (jflorian@doubledog.org)
+- New - [tito] targets for Fedora (jflorian@doubledog.org)
+
 * Tue Sep 26 2017 John Florian <jflorian@doubledog.org> 0.6.1-1
 - New - [tito] test-all target (jflorian@doubledog.org)
 - Bug - [Makefile] queryspec returns partial value (jflorian@doubledog.org)

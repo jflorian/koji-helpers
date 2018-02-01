@@ -1,6 +1,6 @@
 # coding=utf-8
 
-# Copyright 2016-2017 John Florian <jflorian@doubledog.org>
+# Copyright 2016-2018 John Florian <jflorian@doubledog.org>
 #
 # This file is part of koji-helpers.
 #
@@ -22,7 +22,7 @@ from subprocess import CalledProcessError, STDOUT, check_output
 from tempfile import TemporaryDirectory
 
 from koji_helpers import MASH, RSYNC
-from koji_helpers.config import Configuration, MASH_PATH
+from koji_helpers.config import Configuration, MASH_PATH, ConfigurationError
 
 RSYNC_ARGS = [RSYNC,
               '--archive',
@@ -37,7 +37,7 @@ RSYNC_ARGS = [RSYNC,
               ]
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
-__copyright__ = """2016-2017 John Florian"""
+__copyright__ = """2016-2018 John Florian"""
 
 _log = getLogger(__name__)
 
@@ -155,18 +155,22 @@ class Masher(object):
            rebuilding it.
         """
         # NB: empty dir is to force a trailing slash for correct rsync behavior
-        source = os.path.join(self._mash_out_dir, self._relative_dir, '')
-        target = os.path.join(self._repo_dir, self._relative_dir, '')
-        _log.info('synchronizing {!r} with {!r}'.format(target, source))
-        args = RSYNC_ARGS + [source, target]
-        _log.debug('about to call {!r}'.format(args))
         try:
-            out = check_output(args, stderr=STDOUT)
-        except CalledProcessError as e:
-            _log.error('{}\noutput:\n{}'.format(e, e.output.decode()))
+            source = os.path.join(self._mash_out_dir, self._relative_dir, '')
+            target = os.path.join(self._repo_dir, self._relative_dir, '')
+        except ConfigurationError as e:
+            _log.error('cannot sync repo: {}'.format(e))
         else:
-            for line in out.decode().splitlines():
-                _log.debug('rsync: {}'.format(line))
+            _log.info('synchronizing {!r} with {!r}'.format(target, source))
+            args = RSYNC_ARGS + [source, target]
+            _log.debug('about to call {!r}'.format(args))
+            try:
+                out = check_output(args, stderr=STDOUT)
+            except CalledProcessError as e:
+                _log.error('{}\noutput:\n{}'.format(e, e.output.decode()))
+            else:
+                for line in out.decode().splitlines():
+                    _log.debug('rsync: {}'.format(line))
 
     def run(self):
         """Mash a package repository for each tag."""
