@@ -5,7 +5,7 @@ changelog_do_not_remove_cherrypick = 0
 changelog_format = %s (%ae)
 
 [epel7]
-disttag = .el7.centos
+disttag = .el7
 
 [f26]
 disttag = .fc26
