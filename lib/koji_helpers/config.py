@@ -32,6 +32,8 @@ SMASHD = 'smashd'
 EXCLUDE_TAGS = 'exclude_tags'
 GPG_KEY_ID = 'gpg_key_id'
 MASH_PATH = 'mash_path'
+MAX_INTERVAL = 'max_interval'
+MIN_INTERVAL = 'min_interval'
 NOTIFICATIONS_FROM = 'notifications_from'
 NOTIFICATIONS_TO = 'notifications_to'
 REPO_DIR = 'repo_dir'
@@ -81,6 +83,8 @@ class Configuration(object):
             self.smashd_repo_dir = smashd.get(REPO_DIR)
             self.smashd_notifications_from = smashd.get(NOTIFICATIONS_FROM)
             self.smashd_notifications_to = smashd.get( NOTIFICATIONS_TO).split()
+            self.smashd_min_interval = smashd.getfloat(MIN_INTERVAL, 5)
+            self.smashd_max_interval = smashd.getfloat(MAX_INTERVAL, 300)
             self.__buildroots = {}
             self.__repos = {}
             for section in config.sections():

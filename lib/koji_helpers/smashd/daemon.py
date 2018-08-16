@@ -32,10 +32,6 @@ from koji_helpers.smashd.notifier import Notifier
 from koji_helpers.smashd.signer import Signer
 from koji_helpers.smashd.tag_history import KojiTagHistory
 
-# This serves as minimum for both the check-interval and quiescence-period.
-# Anything less than this gains little and is abusive.
-MIN_INTERVAL = 5
-
 SMASHD_STATE = '/var/lib/koji-helpers/smashd/state'
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
@@ -69,7 +65,7 @@ class SignAndMashDaemon(object):
             behavior.
         """
         self.config = Configuration(config_name)
-        self._check_interval = MIN_INTERVAL
+        self._check_interval = self.config.smashd_min_interval
         self._monitor = None
         self.__last_run = None
         self.__mark = None
@@ -136,12 +132,21 @@ class SignAndMashDaemon(object):
         The check-interval is adjusted to be one quarter of the
         quiescent-period provided the constraint is not violated.
 
-        Both are constrained to be no less than MIN_INTERVAL seconds.
+        Both are constrained to be no less than *min_interval* seconds and no
+        more than *max_interval* seconds.
+
         :param elapsed_time:
             timedelta of the last work cycle.
         """
-        self._monitor.period = max(MIN_INTERVAL, elapsed_time.total_seconds())
-        self._check_interval = max(MIN_INTERVAL, self._monitor.period / 4)
+        last = elapsed_time.total_seconds()
+        self._monitor.period = min(
+            max(last, self.config.smashd_min_interval),
+            self.config.smashd_max_interval
+        )
+        self._check_interval = min(
+            max(self._monitor.period / 4, self.config.smashd_min_interval),
+            self.config.smashd_max_interval
+        )
         _log.info(
             'check-interval/quiescent-period adjusted to '
             '{:0,.1f}/{:0,.1f} seconds'.format(
@@ -162,7 +167,8 @@ class SignAndMashDaemon(object):
     def run(self):
         _log.info('started; waiting for tag events')
         changes = {}
-        self._monitor = QuiescenceMonitor(MIN_INTERVAL, changes)
+        self._monitor = QuiescenceMonitor(self.config.smashd_min_interval,
+                                          changes)
         while True:
             self.__mark = self.__now_iso_format
             _log.debug(
