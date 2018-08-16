@@ -17,7 +17,7 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # koji-helpers.  If not, see <http://www.gnu.org/licenses/>.
-from logging import Filter, LoggerAdapter
+from logging import LoggerAdapter
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
 __copyright__ = """2017-2018 John Florian"""
