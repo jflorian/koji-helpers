@@ -30,6 +30,13 @@
 # exclude_tags is a space-separated list of tags which smashd should ignore.
 ;exclude_tags = trashcan
 
+# min_interval and max_interval serve as an enforced range boundary for both
+# the check-interval and quiescence-period, both of which are auto-tuned.
+# The min_interval helps avoid abusing your Koji Hub while the max_interval
+# helps ensure you don't wait too long for repository updates.
+;min_interval = 5.0
+;max_interval = 300.0
+
 
 # You must also define a section for each package repository.  The section
 # name must begin with `repository ` plus the name of a Koji tag which

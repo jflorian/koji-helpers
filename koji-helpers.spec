@@ -6,7 +6,7 @@
 %global repomgr_user repomgr
 
 Name:           koji-helpers
-Version:        0.6.2
+Version:        0.7.0
 Release:        1%{?dist}
 
 # {{{1 package meta-data
@@ -68,8 +68,6 @@ install -Dp -m 0600 etc/config                  %{buildroot}%{_sysconfdir}/%{nam
 install -Dp -m 0644 etc/logging.yaml            %{buildroot}%{_sysconfdir}/%{name}/logging.yaml
 install -Dp -m 0644 lib/systemd/gojira.service  %{buildroot}%{_unitdir}/gojira.service
 install -Dp -m 0644 lib/systemd/smashd.service  %{buildroot}%{_unitdir}/smashd.service
-install -Dp -m 0755 bin/gojira                  %{buildroot}%{_bindir}/gojira
-install -Dp -m 0755 bin/smashd                  %{buildroot}%{_bindir}/smashd
 
 install -d -m 0755 %{buildroot}%{_var}/lib/%{name}/gojira
 install -d -m 0755 %{buildroot}%{_var}/lib/%{name}/smashd
@@ -129,6 +127,19 @@ exit 0
 
 # {{{1 changelog
 %changelog
+* Thu Aug 16 2018 John Florian <jflorian@doubledog.org> 0.7.0-1
+- Change - let distutils install our scripts (jflorian@doubledog.org)
+- New - min_interval/max_interval for smashd in config (jflorian@doubledog.org)
+- Refactor - simplify config parsing (jflorian@doubledog.org)
+- Refactor - drop unused constants (jflorian@doubledog.org)
+- Refactor - drop unused import (jflorian@doubledog.org)
+- Janitorial - add SPDX license identifier globally (jflorian@doubledog.org)
+- Change - [PyCharm] bump SDK to Python 3.6 (jflorian@doubledog.org)
+- New - [PyCharm] encodings configuration (jflorian@doubledog.org)
+- [tito] - restructure epel targets (jflorian@doubledog.org)
+- Change - [tito] disttag for EL7 (jflorian@doubledog.org)
+- New - [tito] targets for Fedora 28 (jflorian@doubledog.org)
+
 * Thu Feb 01 2018 John Florian <jflorian@doubledog.org> 0.6.2-1
 - Drop - [tito] Fedora 25 release target (jflorian@doubledog.org)
 - Change - replace logging filter with simpler setup (jflorian@doubledog.org)
@@ -152,74 +163,3 @@ exit 0
 - Bug - [smashd] repoview is not updated in public view
   (jflorian@doubledog.org)
 - Drop - Dart-specific tito releasers (jflorian@doubledog.org)
-
-* Wed Feb 08 2017 John Florian <jflorian@doubledog.org> 0.6.0-1
-- Bug - [gojira] connection errors are fatal (jflorian@doubledog.org)
-- New - better handling of configuration errors (jflorian@doubledog.org)
-
-* Mon Feb 06 2017 John Florian <jflorian@doubledog.org> 0.5.2-1
-- New - include LICENSE file (jflorian@doubledog.org)
-
-* Mon Feb 06 2017 John Florian <jflorian@doubledog.org> 0.5.1-1
-- New - include LICENSE file (jflorian@doubledog.org)
-
-* Thu Feb 02 2017 John Florian <jflorian@doubledog.org> 0.5.0-1
-- Janitorial - global code reformat (jflorian@doubledog.org)
-- New - [smashd] colorize mail notifications (jflorian@doubledog.org)
-- Change - minor improvements to logged messages (jflorian@doubledog.org)
-
-* Fri Jan 27 2017 John Florian <jflorian@doubledog.org> 0.4.0-1
-- New - [gojira] dynamic quiescent-period adjustment (jflorian@doubledog.org)
-- New - [smashd] dynamic quiescent-period adjustment (jflorian@doubledog.org)
-- Change - [smashd] only sign unsigned RPMs (jflorian@doubledog.org)
-- Refactor - intro KojiBuildInfo.rpms property (jflorian@doubledog.org)
-- Change - [smashd] sorted notifications, code font (jflorian@doubledog.org)
-
-* Wed Jan 25 2017 John Florian <jflorian@doubledog.org> 0.3.1-1
-- Bug - [smashd] don't sign empty build set (jflorian@doubledog.org)
-
-* Wed Jan 25 2017 John Florian <jflorian@doubledog.org> 0.3.0-1
-- Change - [gojira] space delimited buildroot configs (jflorian@doubledog.org)
-- New - [smashd] send email notifications of affected repos
-  (jflorian@doubledog.org)
-- Change - [smashd] classify events as tagging in/out (jflorian@doubledog.org)
-- New - KojiListHistory class (jflorian@doubledog.org)
-- New - KojiWriteSignedRpm class (jflorian@doubledog.org)
-- New - KojiBuildInfo class (jflorian@doubledog.org)
-- Drop - obsolete regen-repos service, bin, config, etc.
-  (jflorian@doubledog.org)
-- New - gojira.service for systemd (jflorian@doubledog.org)
-- New - gojira executable (jflorian@doubledog.org)
-- New - GojiraCLI class (jflorian@doubledog.org)
-- New - GojiraDaemon class (jflorian@doubledog.org)
-- New - BuildRootDependenciesMonitor class (jflorian@doubledog.org)
-- New - koji_helpers.gojira package (jflorian@doubledog.org)
-- New - ModuleNameFilter class (jflorian@doubledog.org)
-- New - KojiHelperLoggerAdapter class (jflorian@doubledog.org)
-- New - KojiCommand class and several sub-classes (jflorian@doubledog.org)
-- Change - redo of Makefile (jflorian@doubledog.org)
-- Change - [smashd] log more clearly when ops are done (jflorian@doubledog.org)
-- Change - [smashd] improve confusing log message (jflorian@doubledog.org)
-- Bug - no such logging handler `short` (jflorian@doubledog.org)
-- Refactor - remove unused SignAndMashDaemon attribute (jflorian@doubledog.org)
-- Janitorial - minor formatting issues (jflorian@doubledog.org)
-- Janitorial - update copyrights (jflorian@doubledog.org)
-- New - logging configuration via YAML (jflorian@doubledog.org)
-- Janitorial - minor reformatting (jflorian@doubledog.org)
-- Refactor - move all smashd modules into new package (jflorian@doubledog.org)
-- Refactor - leverage QuiescenceMonitor (jflorian@doubledog.org)
-- New - Configuration class (jflorian@doubledog.org)
-- Refactor - MashDaemon becomes SignAndMashDaemon (jflorian@doubledog.org)
-- Change - extend smashd to sign as needed (jflorian@doubledog.org)
-- New - Signer class (jflorian@doubledog.org)
-- New - koji_helpers.sign Python package (jflorian@doubledog.org)
-- Bug - mislabeled VIM folding section in spec (jflorian@doubledog.org)
-- Change - smashd obsoletes mash-everything (jflorian@doubledog.org)
-- New - smashd executable -- WIP (jflorian@doubledog.org)
-- New - Masher class (jflorian@doubledog.org)
-- New - MashDaemon class (jflorian@doubledog.org)
-- New - koji_helpers.mash Python package (jflorian@doubledog.org)
-- New - KojiTagHistory class (jflorian@doubledog.org)
-- New - koji_helpers Python package (jflorian@doubledog.org)
-- New - PyCharm deployment configuration (jflorian@doubledog.org)
-- New - PyCharm project configuration (jflorian@doubledog.org)

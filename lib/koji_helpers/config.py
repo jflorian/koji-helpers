@@ -1,6 +1,7 @@
 # coding=utf-8
 
-# Copyright 2016-2017 John Florian <jflorian@doubledog.org>
+# Copyright 2016-2018 John Florian <jflorian@doubledog.org>
+# SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This file is part of koji-helpers.
 #
@@ -28,19 +29,19 @@ REPOSITORY_PREFIX = 'repository '
 SMASHD = 'smashd'
 
 # option names
-CHECK_INTERVAL = 'check_interval'
 EXCLUDE_TAGS = 'exclude_tags'
 GPG_KEY_ID = 'gpg_key_id'
 MASH_PATH = 'mash_path'
+MAX_INTERVAL = 'max_interval'
+MIN_INTERVAL = 'min_interval'
 NOTIFICATIONS_FROM = 'notifications_from'
 NOTIFICATIONS_TO = 'notifications_to'
-QUIESCENT_PERIOD = 'quiescent_period'
 REPO_DIR = 'repo_dir'
 SIGUL_KEY_NAME = 'sigul_key_name'
 SIGUL_KEY_PASS = 'sigul_key_pass'
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
-__copyright__ = """2016-2017 John Florian"""
+__copyright__ = """2016-2018 John Florian"""
 
 _log = getLogger(__name__)
 
@@ -77,12 +78,13 @@ class Configuration(object):
         config = configparser.ConfigParser()
         try:
             config.read(self.filename)
-            self.smashd_exclude_tags = config.get(SMASHD, EXCLUDE_TAGS).split()
-            self.smashd_repo_dir = config.get(SMASHD, REPO_DIR)
-            self.smashd_notifications_from = config.get(SMASHD,
-                                                        NOTIFICATIONS_FROM)
-            self.smashd_notifications_to = config.get(SMASHD,
-                                                      NOTIFICATIONS_TO).split()
+            smashd = config[SMASHD]
+            self.smashd_exclude_tags = smashd.get(EXCLUDE_TAGS).split()
+            self.smashd_repo_dir = smashd.get(REPO_DIR)
+            self.smashd_notifications_from = smashd.get(NOTIFICATIONS_FROM)
+            self.smashd_notifications_to = smashd.get( NOTIFICATIONS_TO).split()
+            self.smashd_min_interval = smashd.getfloat(MIN_INTERVAL, 5)
+            self.smashd_max_interval = smashd.getfloat(MAX_INTERVAL, 300)
             self.__buildroots = {}
             self.__repos = {}
             for section in config.sections():

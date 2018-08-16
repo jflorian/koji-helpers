@@ -1,6 +1,7 @@
 # coding=utf-8
 
-# Copyright 2017 John Florian <jflorian@doubledog.org>
+# Copyright 2017-2018 John Florian <jflorian@doubledog.org>
+# SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This file is part of koji-helpers.
 #
@@ -28,7 +29,7 @@ CREATED_TASK_PATTERN = re.compile(r'Created task: *(\d+)', re.MULTILINE)
 STATE_PATTERN = re.compile(r'State: *(\S+)', re.MULTILINE)
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
-__copyright__ = """2017 John Florian"""
+__copyright__ = """2017-2018 John Florian"""
 
 
 class KojiCommand(object):
