@@ -76,12 +76,11 @@ class Configuration(object):
         config = configparser.ConfigParser()
         try:
             config.read(self.filename)
-            self.smashd_exclude_tags = config.get(SMASHD, EXCLUDE_TAGS).split()
-            self.smashd_repo_dir = config.get(SMASHD, REPO_DIR)
-            self.smashd_notifications_from = config.get(SMASHD,
-                                                        NOTIFICATIONS_FROM)
-            self.smashd_notifications_to = config.get(SMASHD,
-                                                      NOTIFICATIONS_TO).split()
+            smashd = config[SMASHD]
+            self.smashd_exclude_tags = smashd.get(EXCLUDE_TAGS).split()
+            self.smashd_repo_dir = smashd.get(REPO_DIR)
+            self.smashd_notifications_from = smashd.get(NOTIFICATIONS_FROM)
+            self.smashd_notifications_to = smashd.get( NOTIFICATIONS_TO).split()
             self.__buildroots = {}
             self.__repos = {}
             for section in config.sections():
