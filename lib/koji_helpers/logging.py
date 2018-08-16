@@ -1,6 +1,7 @@
 # coding=utf-8
 
 # Copyright 2017-2018 John Florian <jflorian@doubledog.org>
+# SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This file is part of koji-helpers.
 #

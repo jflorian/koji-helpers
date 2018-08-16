@@ -1,6 +1,7 @@
 # coding=utf-8
 
-# Copyright 2017 John Florian <jflorian@doubledog.org>
+# Copyright 2017-2018 John Florian <jflorian@doubledog.org>
+# SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This file is part of koji-helpers.
 #
@@ -25,7 +26,7 @@ from koji_helpers import LOGGING_CONFIG
 from koji_helpers.gojira.daemon import GojiraDaemon
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
-__copyright__ = """2017 John Florian"""
+__copyright__ = """2017-2018 John Florian"""
 
 
 class GojiraCLI(object):

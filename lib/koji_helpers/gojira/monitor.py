@@ -1,6 +1,7 @@
 # coding=utf-8
 
-# Copyright 2017 John Florian <jflorian@doubledog.org>
+# Copyright 2017-2018 John Florian <jflorian@doubledog.org>
+# SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This file is part of koji-helpers.
 #
@@ -39,7 +40,7 @@ MIN_INTERVAL = 60
 GOJIRA_STATE = '/var/lib/koji-helpers/gojira/'
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
-__copyright__ = """2017 John Florian"""
+__copyright__ = """2017-2018 John Florian"""
 
 
 class BuildRootDependenciesMonitor(Thread):

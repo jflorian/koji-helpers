@@ -1,6 +1,7 @@
 # coding=utf-8
 
 # Copyright 2016-2018 John Florian <jflorian@doubledog.org>
+# SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This file is part of koji-helpers.
 #
@@ -22,7 +23,7 @@ from subprocess import CalledProcessError, STDOUT, check_output
 from tempfile import TemporaryDirectory
 
 from koji_helpers import MASH, RSYNC
-from koji_helpers.config import Configuration, MASH_PATH, ConfigurationError
+from koji_helpers.config import Configuration, ConfigurationError, MASH_PATH
 
 RSYNC_ARGS = [RSYNC,
               '--archive',

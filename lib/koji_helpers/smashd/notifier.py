@@ -1,6 +1,7 @@
 # coding=utf-8
 
-# Copyright 2017 John Florian <jflorian@doubledog.org>
+# Copyright 2017-2018 John Florian <jflorian@doubledog.org>
+# SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This file is part of koji-helpers.
 #
@@ -27,7 +28,7 @@ from koji_helpers.config import Configuration
 from koji_helpers.smashd.tag_history import BUILD, TAG_IN, TAG_OUT
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
-__copyright__ = """2017 John Florian"""
+__copyright__ = """2017-2018 John Florian"""
 
 _log = getLogger(__name__)
 

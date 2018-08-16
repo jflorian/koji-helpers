@@ -1,6 +1,7 @@
 # coding=utf-8
 
-# Copyright 2016-2017 John Florian <jflorian@doubledog.org>
+# Copyright 2016-2018 John Florian <jflorian@doubledog.org>
+# SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This file is part of koji-helpers.
 #
@@ -40,7 +41,7 @@ SIGUL_KEY_NAME = 'sigul_key_name'
 SIGUL_KEY_PASS = 'sigul_key_pass'
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
-__copyright__ = """2016-2017 John Florian"""
+__copyright__ = """2016-2018 John Florian"""
 
 _log = getLogger(__name__)
 
