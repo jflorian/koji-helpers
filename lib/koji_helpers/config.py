@@ -29,13 +29,11 @@ REPOSITORY_PREFIX = 'repository '
 SMASHD = 'smashd'
 
 # option names
-CHECK_INTERVAL = 'check_interval'
 EXCLUDE_TAGS = 'exclude_tags'
 GPG_KEY_ID = 'gpg_key_id'
 MASH_PATH = 'mash_path'
 NOTIFICATIONS_FROM = 'notifications_from'
 NOTIFICATIONS_TO = 'notifications_to'
-QUIESCENT_PERIOD = 'quiescent_period'
 REPO_DIR = 'repo_dir'
 SIGUL_KEY_NAME = 'sigul_key_name'
 SIGUL_KEY_PASS = 'sigul_key_pass'
