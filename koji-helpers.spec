@@ -68,8 +68,6 @@ install -Dp -m 0600 etc/config                  %{buildroot}%{_sysconfdir}/%{nam
 install -Dp -m 0644 etc/logging.yaml            %{buildroot}%{_sysconfdir}/%{name}/logging.yaml
 install -Dp -m 0644 lib/systemd/gojira.service  %{buildroot}%{_unitdir}/gojira.service
 install -Dp -m 0644 lib/systemd/smashd.service  %{buildroot}%{_unitdir}/smashd.service
-install -Dp -m 0755 bin/gojira                  %{buildroot}%{_bindir}/gojira
-install -Dp -m 0755 bin/smashd                  %{buildroot}%{_bindir}/smashd
 
 install -d -m 0755 %{buildroot}%{_var}/lib/%{name}/gojira
 install -d -m 0755 %{buildroot}%{_var}/lib/%{name}/smashd
