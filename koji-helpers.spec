@@ -7,7 +7,7 @@
 
 Name:           koji-helpers
 Version:        0.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 
 # {{{1 package meta-data
 Summary:        Supplementary tools to help in a Koji deployment
@@ -30,7 +30,7 @@ Requires:       koji
 Requires:       mash
 Requires:       python%{python3_pkgversion}
 Requires:       python%{python3_pkgversion}-PyYAML
-Requires:       python3-doubledog >= 2.1.0
+Requires:       python3-doubledog >= 3.0.0, python3-doubledog < 4.0.0
 Requires:       python34-requests
 Requires:       repoview
 Requires:       rsync
@@ -127,6 +127,11 @@ exit 0
 
 # {{{1 changelog
 %changelog
+* Fri Nov 16 2018 John Florian <jflorian@doubledog.org> 0.7.0-2
+- Bug - Fedora 29 requires newer python3-doubledog (jflorian@doubledog.org)
+- Drop - [tito] Fedora 26 release targets (jflorian@doubledog.org)
+- New - [tito] targets for Fedora 29 (jflorian@doubledog.org)
+
 * Thu Aug 16 2018 John Florian <jflorian@doubledog.org> 0.7.0-1
 - Change - let distutils install our scripts (jflorian@doubledog.org)
 - New - min_interval/max_interval for smashd in config (jflorian@doubledog.org)

@@ -7,12 +7,12 @@ changelog_format = %s (%ae)
 [epel7]
 disttag = .el7
 
-[f26]
-disttag = .fc26
-
 [f27]
 disttag = .fc27
 
 [f28]
 disttag = .fc28
+
+[f29]
+disttag = .fc29
 
