@@ -1,5 +1,6 @@
 # vim: foldmethod=marker
 
+%global min_py_ver 3.6
 %global python_package_name koji_helpers
 %global python_setup lib/%{python_package_name}/setup.py
 %global repomgr_group repomgr
@@ -28,10 +29,10 @@ Requires(pre):  shadow-utils
 
 Requires:       koji
 Requires:       mash
-Requires:       python%{python3_pkgversion}
+Requires:       python%{python3_pkgversion} >= %{min_py_ver}
 Requires:       python%{python3_pkgversion}-PyYAML
+Requires:       python%{python3_pkgversion}-requests
 Requires:       python3-doubledog >= 3.0.0, python3-doubledog < 4.0.0
-Requires:       python34-requests
 Requires:       repoview
 Requires:       rsync
 Requires:       sigul
