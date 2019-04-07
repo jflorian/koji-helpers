@@ -7,7 +7,7 @@ from distutils.core import setup
 
 setup(
     name='koji_helpers',
-    version='',
+    version='@@VERSION@@',
     packages=[
         'koji_helpers',
         'koji_helpers.gojira',

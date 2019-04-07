@@ -56,11 +56,10 @@ This package provides tools that supplement the standard Koji packages.
 %setup -q
 
 %build
-%{__python3} %{python_setup} build
+make build
 
 # {{{1 install
 %install
-
 %{__python3} %{python_setup} install -O1 --skip-build --root %{buildroot}
 
 install -Dp -m 0600 etc/config                  %{buildroot}%{_sysconfdir}/%{name}/config
