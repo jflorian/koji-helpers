@@ -64,7 +64,9 @@ clean-doc:
 .PHONY: clean-pyc
 clean-pyc:
 	@echo Removing all Python bytecode build artifacts...
-	find . -name '*.pyc' -delete
+	find . \
+		\( -name '*.pyc' -type f -delete \) , \
+		\( -name '__pycache__' -type d -delete \)
 
 # target: koji-build - Submit build RPM task into Koji.
 .PHONY: koji-build
