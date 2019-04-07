@@ -16,7 +16,7 @@ Summary:        Supplementary tools to help in a Koji deployment
 Group:          Development/Tools
 Vendor:         doubledog.org
 License:        GPLv3+
-URL:            http://www.doubledog.org/git/koji-helpers/
+URL:            https://www.doubledog.org/git/%{name}.git
 Source0:        %{name}-%{version}.tar.gz
 BuildArch:      noarch
 

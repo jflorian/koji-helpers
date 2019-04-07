@@ -23,7 +23,7 @@ setup(
         'bin/gojira',
         'bin/smashd',
     ],
-    url='',
+    url='https://www.doubledog.org/git/koji-helpers.git',
     license='GPLv3+',
     author='John Florian',
     author_email='jflorian@doubledog.org',
