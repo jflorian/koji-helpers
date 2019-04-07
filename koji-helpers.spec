@@ -19,7 +19,6 @@ License:        GPLv3+
 URL:            http://www.doubledog.org/git/koji-helpers/
 Source0:        %{name}-%{version}.tar.gz
 BuildArch:      noarch
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  python%{python3_pkgversion}-devel
 %{?systemd_requires}
@@ -61,7 +60,6 @@ This package provides tools that supplement the standard Koji packages.
 
 # {{{1 install
 %install
-rm -rf %{buildroot}
 
 %{__python3} %{python_setup} install -O1 --skip-build --root %{buildroot}
 
@@ -72,10 +70,6 @@ install -Dp -m 0644 lib/systemd/smashd.service  %{buildroot}%{_unitdir}/smashd.s
 
 install -d -m 0755 %{buildroot}%{_var}/lib/%{name}/gojira
 install -d -m 0755 %{buildroot}%{_var}/lib/%{name}/smashd
-
-# {{{1 clean
-%clean
-rm -rf %{buildroot}
 
 # {{{1 pre
 %pre
