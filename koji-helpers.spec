@@ -8,7 +8,7 @@
 
 Name:           koji-helpers
 Version:        0.7.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 
 # {{{1 package meta-data
 Summary:        Supplementary tools to help in a Koji deployment
@@ -121,6 +121,16 @@ exit 0
 
 # {{{1 changelog
 %changelog
+* Sun Apr 07 2019 John Florian <jflorian@doubledog.org> 0.7.0-3
+- Change - [spec] delegate Python build to Makefile (jflorian@doubledog.org)
+- Change - [Makefile] clean __pycache__ files too (jflorian@doubledog.org)
+- Janitorial - fixup project URLs (jflorian@doubledog.org)
+- Bug - [setup] keyword sb 'requires' not 'require' (jflorian@doubledog.org)
+- Change - [Makefile] many targets are actually PHONY (jflorian@doubledog.org)
+- Janitorial - modernize spec file (jflorian@doubledog.org)
+- Change - bump for EPEL moving to Python 3.6 (jflorian@doubledog.org)
+- Drop - [tito] targets for Fedora 27 (jflorian@doubledog.org)
+
 * Fri Nov 16 2018 John Florian <jflorian@doubledog.org> 0.7.0-2
 - Bug - Fedora 29 requires newer python3-doubledog (jflorian@doubledog.org)
 - Drop - [tito] Fedora 26 release targets (jflorian@doubledog.org)
