@@ -1,5 +1,6 @@
 # vim: foldmethod=marker
 
+%global min_py_ver 3.6
 %global python_package_name koji_helpers
 %global python_setup lib/%{python_package_name}/setup.py
 %global repomgr_group repomgr
@@ -7,7 +8,7 @@
 
 Name:           koji-helpers
 Version:        0.7.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 
 # {{{1 package meta-data
 Summary:        Supplementary tools to help in a Koji deployment
@@ -15,10 +16,9 @@ Summary:        Supplementary tools to help in a Koji deployment
 Group:          Development/Tools
 Vendor:         doubledog.org
 License:        GPLv3+
-URL:            http://www.doubledog.org/git/koji-helpers/
+URL:            https://www.doubledog.org/git/%{name}.git
 Source0:        %{name}-%{version}.tar.gz
 BuildArch:      noarch
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  python%{python3_pkgversion}-devel
 %{?systemd_requires}
@@ -28,10 +28,10 @@ Requires(pre):  shadow-utils
 
 Requires:       koji
 Requires:       mash
-Requires:       python%{python3_pkgversion}
+Requires:       python%{python3_pkgversion} >= %{min_py_ver}
 Requires:       python%{python3_pkgversion}-PyYAML
+Requires:       python%{python3_pkgversion}-requests
 Requires:       python3-doubledog >= 3.0.0, python3-doubledog < 4.0.0
-Requires:       python34-requests
 Requires:       repoview
 Requires:       rsync
 Requires:       sigul
@@ -56,12 +56,10 @@ This package provides tools that supplement the standard Koji packages.
 %setup -q
 
 %build
-%{__python3} %{python_setup} build
+make build
 
 # {{{1 install
 %install
-rm -rf %{buildroot}
-
 %{__python3} %{python_setup} install -O1 --skip-build --root %{buildroot}
 
 install -Dp -m 0600 etc/config                  %{buildroot}%{_sysconfdir}/%{name}/config
@@ -71,10 +69,6 @@ install -Dp -m 0644 lib/systemd/smashd.service  %{buildroot}%{_unitdir}/smashd.s
 
 install -d -m 0755 %{buildroot}%{_var}/lib/%{name}/gojira
 install -d -m 0755 %{buildroot}%{_var}/lib/%{name}/smashd
-
-# {{{1 clean
-%clean
-rm -rf %{buildroot}
 
 # {{{1 pre
 %pre
@@ -127,6 +121,16 @@ exit 0
 
 # {{{1 changelog
 %changelog
+* Sun Apr 07 2019 John Florian <jflorian@doubledog.org> 0.7.0-3
+- Change - [spec] delegate Python build to Makefile (jflorian@doubledog.org)
+- Change - [Makefile] clean __pycache__ files too (jflorian@doubledog.org)
+- Janitorial - fixup project URLs (jflorian@doubledog.org)
+- Bug - [setup] keyword sb 'requires' not 'require' (jflorian@doubledog.org)
+- Change - [Makefile] many targets are actually PHONY (jflorian@doubledog.org)
+- Janitorial - modernize spec file (jflorian@doubledog.org)
+- Change - bump for EPEL moving to Python 3.6 (jflorian@doubledog.org)
+- Drop - [tito] targets for Fedora 27 (jflorian@doubledog.org)
+
 * Fri Nov 16 2018 John Florian <jflorian@doubledog.org> 0.7.0-2
 - Bug - Fedora 29 requires newer python3-doubledog (jflorian@doubledog.org)
 - Drop - [tito] Fedora 26 release targets (jflorian@doubledog.org)
