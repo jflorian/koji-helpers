@@ -60,8 +60,7 @@ class Signer(object):
                 f')')
 
     def __str__(self) -> str:
-        return 'Signer'.format(
-        )
+        return f'Signer'
 
     @property
     def _koji_key(self) -> str:
@@ -107,54 +106,45 @@ class Signer(object):
         """
         built_rpms = set()
         for build in self._builds:
-            _log.debug('getting RPMs for build {!r}'.format(build))
+            _log.debug(f'getting RPMs for build {build!r}')
             built_rpms.update(KojiBuildInfo(build).rpms)
-        _log.debug('found built RPMs: {!r}'.format(built_rpms))
+        _log.debug(f'found built RPMs: {built_rpms!r}')
         signed_rpms = KojiListSigned(tag=self._tag).rpms
-        _log.debug('found signed RPMs: {!r}'.format(signed_rpms))
+        _log.debug(f'found signed RPMs: {signed_rpms!r}')
         unsigned_rpms = built_rpms - signed_rpms
-        _log.debug('giving unsigned RPMs: {!r}'.format(unsigned_rpms))
+        _log.debug(f'giving unsigned RPMs: {unsigned_rpms!r}')
         return list(unsigned_rpms)
 
     def _sign_builds(self):
         unsigned_rpms = self._get_unsigned_rpms()
         if not unsigned_rpms:
-            _log.info('no builds for tag {!r}s need signing'.format(self._tag))
+            _log.info(f'no builds for tag {self._tag!r}s need signing')
             return
-        _log.info(
-            'signing builds {!r} for tag {!r}'.format(
-                unsigned_rpms,
-                self._tag,
-            )
-        )
+        _log.info(f'signing builds {unsigned_rpms!r} for tag {self._tag!r}')
         args = [SIGUL, '--batch', 'sign-rpms', '--store-in-koji', '--koji-only',
                 self._sigul_key] + unsigned_rpms
-        _log.debug('about to call {!r}'.format(args))
+        _log.debug(f'about to call {args!r}')
         sigul = Popen(args, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
         out, err = sigul.communicate(
-            input='{}\0'.format(self._sigul_passphrase).encode()
+            input=f'{self._sigul_passphrase}\0'.encode()
         )
         returncode = sigul.wait()
         if returncode:
             _log.error(
-                'sigul returned {!r} and output:\n{}'.format(
-                    returncode, out.decode(),
-                )
+                f'sigul returned {returncode!r} and output:\n{out.decode()}'
             )
         else:
             for line in out.decode().splitlines():
-                _log.debug('sigul: {}'.format(line))
+                _log.debug(f'sigul: {line}')
         # It's probably harmless to continue even if Sigul failed.
         _log.info(
-            'writing RPMs for builds {!r} signed with key {!r}'.format(
-                self._builds,
-                self._koji_key,
-            )
+            f'writing RPMs for builds {self._builds!r} '
+            f'signed with key {self._koji_key!r}'
         )
         KojiWriteSignedRpm(self._koji_key, self._builds)
 
     def run(self):
-        _log.info('signing due to {}'.format(self.changes))
+        _log.info(f'signing due to {self.changes}')
         for self._tag, change in self.changes.items():
             self._builds = list(change[TAG_IN][BUILD])
             if self._builds:

@@ -1,6 +1,6 @@
 # coding=utf-8
 
-# Copyright 2017-2018 John Florian <jflorian@doubledog.org>
+# Copyright 2017-2019 John Florian <jflorian@doubledog.org>
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This file is part of koji-helpers.
@@ -28,7 +28,7 @@ from koji_helpers.config import Configuration
 from koji_helpers.smashd.tag_history import BUILD, TAG_IN, TAG_OUT
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
-__copyright__ = """2017-2018 John Florian"""
+__copyright__ = """2017-2019 John Florian"""
 
 _log = getLogger(__name__)
 
@@ -51,20 +51,16 @@ class Notifier(object):
         self.run()
 
     def __repr__(self) -> str:
-        return ('{}.{}('
-                'config={!r}, '
-                ')').format(
-            self.__module__, self.__class__.__name__,
-            self.config,
-        )
+        return (f'{self.__module__}.{self.__class__.__name__}('
+                f'config={self.config!r},'
+                f' )')
 
     def __str__(self) -> str:
-        return 'Notifier'.format(
-        )
+        return f'Notifier'
 
     def run(self):
         recipients = self.config.smashd_notifications_to
-        _log.info('sending notification to {!r}'.format(recipients))
+        _log.info(f'sending notification to {recipients!r}')
         body = Body()
         for tag in sorted(self.changes.keys()):
             body.append(Heading(2, tag))

@@ -1,6 +1,6 @@
 # coding=utf-8
 
-# Copyright 2016-2018 John Florian <jflorian@doubledog.org>
+# Copyright 2016-2019 John Florian <jflorian@doubledog.org>
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This file is part of koji-helpers.
@@ -38,7 +38,7 @@ RSYNC_ARGS = [RSYNC,
               ]
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
-__copyright__ = """2016-2018 John Florian"""
+__copyright__ = """2016-2019 John Florian"""
 
 _log = getLogger(__name__)
 
@@ -68,17 +68,13 @@ class Masher(object):
         self.run()
 
     def __repr__(self) -> str:
-        return ('{}.{}('
-                'tags={!r},'
-                'config={!r}'
-                ')').format(
-            self.__module__, self.__class__.__name__,
-            self.tags,
-            self.config,
-        )
+        return (f'{self.__module__}.{self.__class__.__name__}('
+                f'tags={self.tags!r}, '
+                f'config={self.config!r}, '
+                f')')
 
     def __str__(self) -> str:
-        return 'Masher-{}'.format(self._tag) if self._tag else 'Masher'
+        return f'Masher-{self._tag}' if self._tag else 'Masher'
 
     @property
     def _mash_config_name(self) -> str:
@@ -123,24 +119,22 @@ class Masher(object):
             ``True`` iff the mash operation was successful.
         """
         _log.info(
-            'mashing into {!r} using config {!r}'.format(
-                self._mash_out_dir,
-                self._mash_config_name,
-            )
+            f'mashing into {self._mash_out_dir!r} '
+            f'using config {self._mash_config_name!r}'
         )
         # TODO - eval --previous option as better means for update
         # NB: don't pass self._mash_out_dir here; see comments in that property
         args = [MASH, '-o', self._work, self._mash_config_name]
-        _log.debug('about to call {!r}'.format(args))
+        _log.debug(f'about to call {args!r}')
         try:
             out = check_output(args, stderr=STDOUT)
         except CalledProcessError as e:
-            _log.error('{}\noutput:\n{}'.format(e, e.output.decode()))
+            _log.error(f'{e}\noutput:\n{e.output.decode()}')
             return False
         else:
             for line in out.decode().splitlines():
                 # Strip mash's log prefix of date, time, argv[0].
-                _log.debug('mash: {}'.format(line[26:]))
+                _log.debug(f'mash: {line[26:]}')
             return True
 
     def _sync_repo(self):
@@ -160,25 +154,25 @@ class Masher(object):
             source = os.path.join(self._mash_out_dir, self._relative_dir, '')
             target = os.path.join(self._repo_dir, self._relative_dir, '')
         except ConfigurationError as e:
-            _log.error('cannot sync repo: {}'.format(e))
+            _log.error(f'cannot sync repo: {e}')
         else:
-            _log.info('synchronizing {!r} with {!r}'.format(target, source))
+            _log.info(f'synchronizing {target!r} with {source!r}')
             args = RSYNC_ARGS + [source, target]
-            _log.debug('about to call {!r}'.format(args))
+            _log.debug(f'about to call {args!r}')
             try:
                 out = check_output(args, stderr=STDOUT)
             except CalledProcessError as e:
-                _log.error('{}\noutput:\n{}'.format(e, e.output.decode()))
+                _log.error(f'{e}\noutput:\n{e.output.decode()}')
             else:
                 for line in out.decode().splitlines():
-                    _log.debug('rsync: {}'.format(line))
+                    _log.debug(f'rsync: {line}')
 
     def run(self):
         """Mash a package repository for each tag."""
         _log.info('mashing started')
         for self._tag in self.tags:
-            with TemporaryDirectory(prefix='{}-'.format(self)) as self._work:
-                _log.debug('created work directory {!r}'.format(self._work))
+            with TemporaryDirectory(prefix=f'{self}-') as self._work:
+                _log.debug(f'created work directory {self._work!r}')
                 if self._mash_tag():
                     self._sync_repo()
         _log.info('mashing completed')

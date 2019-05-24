@@ -1,6 +1,6 @@
 # coding=utf-8
 
-# Copyright 2016-2018 John Florian <jflorian@doubledog.org>
+# Copyright 2016-2019 John Florian <jflorian@doubledog.org>
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This file is part of koji-helpers.
@@ -35,7 +35,7 @@ from koji_helpers.smashd.tag_history import KojiTagHistory
 SMASHD_STATE = '/var/lib/koji-helpers/smashd/state'
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
-__copyright__ = """2016-2018 John Florian"""
+__copyright__ = """2016-2019 John Florian"""
 
 _log = getLogger(__name__)
 
@@ -71,16 +71,12 @@ class SignAndMashDaemon(object):
         self.__mark = None
 
     def __repr__(self) -> str:
-        return ('{}.{}('
-                'config_name={!r}, '
-                ')').format(
-            self.__module__, self.__class__.__name__,
-            self.config.filename,
-        )
+        return (f'{self.__module__}.{self.__class__.__name__}('
+                f'config_name={self.config.filename!r}, '
+                f')')
 
     def __str__(self) -> str:
-        return 'SignAndMashDaemon'.format(
-        )
+        return f'SignAndMashDaemon'
 
     @property
     def last_run(self):
@@ -89,18 +85,14 @@ class SignAndMashDaemon(object):
                 with open(SMASHD_STATE) as f:
                     self.__last_run = json.load(f)
                 _log.debug(
-                    'loaded last-run of {!r} from {!r}'.format(
-                        self.__last_run,
-                        SMASHD_STATE,
-                    )
+                    f'loaded last-run of {self.__last_run!r} '
+                    f'from {SMASHD_STATE!r}'
                 )
             except FileNotFoundError:
                 self.__last_run = self.__now_iso_format
                 _log.debug(
-                    'initialized last-run to {!r} since {!r} is absent'.format(
-                        self.__last_run,
-                        SMASHD_STATE,
-                    )
+                    f'initialized last-run to {self.__last_run!r} '
+                    f'since {SMASHD_STATE!r} is absent'
                 )
         return self.__last_run
 
@@ -109,9 +101,7 @@ class SignAndMashDaemon(object):
         self.__last_run = value
         with open(SMASHD_STATE, 'w') as f:
             json.dump(self.__last_run, f)
-        _log.debug(
-            'saved last-run to {!r}'.format(self.__last_run, SMASHD_STATE)
-        )
+        _log.debug(f'saved last-run to {self.__last_run!r}')
 
     @property
     def __now(self):
@@ -148,11 +138,8 @@ class SignAndMashDaemon(object):
             self.config.smashd_max_interval
         )
         _log.info(
-            'check-interval/quiescent-period adjusted to '
-            '{:0,.1f}/{:0,.1f} seconds'.format(
-                self._check_interval,
-                self._monitor.period,
-            ),
+            f'check-interval/quiescent-period adjusted to '
+            f'{self._check_interval:0,.1f}/{self._monitor.period:0,.1f} seconds'
         )
 
     def __get_present_changes(self):
@@ -161,7 +148,7 @@ class SignAndMashDaemon(object):
         return hist.changed_tags
 
     def __rest(self):
-        _log.debug('sleeping {} seconds'.format(self._check_interval))
+        _log.debug(f'sleeping {self._check_interval} seconds')
         sleep(self._check_interval)
 
     def run(self):
@@ -171,9 +158,7 @@ class SignAndMashDaemon(object):
                                           changes)
         while True:
             self.__mark = self.__now_iso_format
-            _log.debug(
-                'checking for tag events since {!r}'.format(self.last_run)
-            )
+            _log.debug(f'checking for tag events since {self.last_run!r}')
             changes = self.__get_present_changes()
             self._monitor.update(changes)
             if changes:
