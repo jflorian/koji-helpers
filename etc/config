@@ -20,6 +20,14 @@
 
 
 
+[klean]
+# koji_dir is the name of the directory that is the root of all Koji
+# directories.  Effectively, this must be the same value as the KojiDir
+# setting in your hub.conf.
+;koji_dir = /mnt/koji
+
+
+
 [smashd]
 # exclude_tags is a space-separated list of tags which smashd should ignore.
 ;exclude_tags = trashcan

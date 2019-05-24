@@ -25,12 +25,14 @@ from koji_helpers import CONFIG
 # section names
 BUILDROOT_PREFIX = 'buildroot '
 GOJIRA = 'gojira'
+KLEAN = 'klean'
 REPOSITORY_PREFIX = 'repository '
 SMASHD = 'smashd'
 
 # option names
 EXCLUDE_TAGS = 'exclude_tags'
 GPG_KEY_ID = 'gpg_key_id'
+KOJI_DIR = 'koji_dir'
 MAX_INTERVAL = 'max_interval'
 MIN_INTERVAL = 'min_interval'
 NOTIFICATIONS_FROM = 'notifications_from'
@@ -76,6 +78,8 @@ class Configuration(object):
         config = configparser.ConfigParser()
         try:
             config.read(self.filename)
+            klean = config[KLEAN]
+            self.klean_koji_dir = klean.get(KOJI_DIR)
             smashd = config[SMASHD]
             self.smashd_exclude_tags = smashd.get(EXCLUDE_TAGS).split()
             self.smashd_notifications_from = smashd.get(NOTIFICATIONS_FROM)
