@@ -1,6 +1,6 @@
 # coding=utf-8
 
-# Copyright 2016-2018 John Florian <jflorian@doubledog.org>
+# Copyright 2016-2019 John Florian <jflorian@doubledog.org>
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This file is part of koji-helpers.
@@ -29,7 +29,7 @@ from koji_helpers.koji import KojiBuildInfo, KojiListSigned, KojiWriteSignedRpm
 from koji_helpers.smashd.tag_history import BUILD, TAG_IN
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
-__copyright__ = """2016-2018 John Florian"""
+__copyright__ = """2016-2019 John Florian"""
 
 _log = getLogger(__name__)
 
@@ -54,13 +54,10 @@ class Signer(object):
         self.run()
 
     def __repr__(self) -> str:
-        return '{}.{}()'.format(
-            'changes={!r},',
-            'config={!r},',
-            self.__module__, self.__class__.__name__,
-            self.changes,
-            self.config,
-        )
+        return (f'{self.__module__}.{self.__class__.__name__}('
+                f'changes={self.changes!r}, '
+                f'config={self.config!r}, '
+                f')')
 
     def __str__(self) -> str:
         return 'Signer'.format(
