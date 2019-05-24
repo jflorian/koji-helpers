@@ -40,7 +40,7 @@ __copyright__ = """2016-2019 John Florian"""
 _log = getLogger(__name__)
 
 
-class SignAndMashDaemon(object):
+class SignAndComposeDaemon(object):
     """
     A pseudo-daemon that monitors a Koji Hub for events that involve tag
     operations.  When such events are detected, the daemon waits for the
@@ -58,7 +58,7 @@ class SignAndMashDaemon(object):
 
     def __init__(self, config_name: str = CONFIG):
         """
-        Initialize the SignAndMashDaemon object.
+        Initialize the SignAndComposeDaemon object.
 
         :param config_name:
             The name of the configuration file that governs this daemon's
@@ -76,7 +76,7 @@ class SignAndMashDaemon(object):
                 f')')
 
     def __str__(self) -> str:
-        return f'SignAndMashDaemon'
+        return f'SignAndComposeDaemon'
 
     @property
     def last_run(self):

@@ -44,7 +44,7 @@ class Notifier(object):
             config: Configuration,
     ):
         """
-        Initialize the SignAndMashDaemon object.
+        Initialize the SignAndComposeDaemon object.
         """
         self.changes = changes
         self.config = config
