@@ -1,6 +1,6 @@
 # coding=utf-8
 
-# Copyright 2016-2018 John Florian <jflorian@doubledog.org>
+# Copyright 2016-2019 John Florian <jflorian@doubledog.org>
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This file is part of koji-helpers.
@@ -24,7 +24,7 @@ from logging import getLogger
 from koji_helpers.koji import KojiListHistory
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
-__copyright__ = """2016-2018 John Florian"""
+__copyright__ = """2016-2019 John Florian"""
 
 # keys
 BUILD = 'build'
@@ -37,8 +37,8 @@ USER = 'user'
 
 # pre-compiled regex
 TAGGED_RE = re.compile(
-    '^(?P<{}>.*\d{{4}}) (?P<{}>\S+) (?P<{}>tagged into|untagged from) '
-    '(?P<{}>\S+) by (?P<{}>\S+).*$'.format(
+    r'^(?P<{}>.*\d{{4}}) (?P<{}>\S+) (?P<{}>tagged into|untagged from) '
+    r'(?P<{}>\S+) by (?P<{}>\S+).*$'.format(
         TIME, BUILD, DIRECTION, TAG, USER,
     )
 )
