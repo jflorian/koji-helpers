@@ -27,6 +27,7 @@ from doubledog.quiescence import QuiescenceMonitor
 
 from koji_helpers import CONFIG
 from koji_helpers.config import Configuration
+from koji_helpers.smashd.distrepo import DistRepoMaker
 from koji_helpers.smashd.masher import Masher
 from koji_helpers.smashd.notifier import Notifier
 from koji_helpers.smashd.signer import Signer
@@ -168,7 +169,8 @@ class SignAndComposeDaemon(object):
                     start_time = self.__now
                     Signer(changes, self.config)
                     tags = changes.keys()
-                    Masher(tags, self.config)
+                    # Masher(tags, self.config)
+                    DistRepoMaker(tags, self.config)
                     elapsed_time = self.__now - start_time
                     self.last_run = self.__mark
                     Notifier(changes, self.config)
