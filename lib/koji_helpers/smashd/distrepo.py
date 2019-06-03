@@ -17,25 +17,10 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # koji-helpers.  If not, see <http://www.gnu.org/licenses/>.
-import os
 from logging import getLogger
-from subprocess import CalledProcessError, STDOUT, check_output
-from tempfile import TemporaryDirectory
 
-from koji_helpers import MASH, RSYNC
-from koji_helpers.config import Configuration, ConfigurationError, MASH_PATH
-
-RSYNC_ARGS = [RSYNC,
-              '--archive',
-              '--copy-links',
-              '--delay-updates',
-              '--delete',
-              '--delete-delay',
-              '--exclude=lost+found/',
-              '--no-group',
-              '--no-owner',
-              '--stats',
-              ]
+from koji_helpers.config import Configuration, GPG_KEY_ID
+from koji_helpers.koji import KojiDistRepo
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
 __copyright__ = """2016-2019 John Florian"""
@@ -43,14 +28,19 @@ __copyright__ = """2016-2019 John Florian"""
 _log = getLogger(__name__)
 
 
-class Masher(object):
+class DistRepoMaker(object):
     """
-    A wrapper around the mash tool to produce one consumable package repository
-    for each Koji build tag passed to the constructor.  All mash work is
-    performed in temporary directory.  For each build tag that is successfully
-    mashed, the resultant work is then introduced into the publicly consumable
-    package repositories for the site.  This happens via the venerable rsync
-    tool so as to minimize disruptions to those public repositories.
+    A wrapper around the Koji's 'dist-repo' feature to compose one consumable
+    package repository for each Koji build tag passed to the constructor.  For
+    each build tag that is successfully composed there will exist a new
+    directory that's created under the `repos-dist` directory of your Koji
+    directory (usually `/mnt/koji`).  This new directory will be named as a
+    number matching Koji's internal Repo ID.  Once the repository has been
+    generated within this new directory, Koji will reestablish a `latest`
+    symlink to target it.
+
+    From there, it's a trivial endeavor to bind mount or otherwise serve
+    these to the consuming public via HTTP or NFS.
     """
 
     def __init__(
@@ -59,7 +49,7 @@ class Masher(object):
             config: Configuration,
     ):
         """
-        Initialize the Masher object.
+        Initialize the DistRepoMaker object.
         """
         self.config = config
         self.tags = tags
@@ -74,105 +64,33 @@ class Masher(object):
                 f')')
 
     def __str__(self) -> str:
-        return f'Masher-{self._tag}' if self._tag else 'Masher'
+        return f'DistRepoMaker-{self._tag}' if self._tag else 'DistRepoMaker'
 
     @property
-    def _mash_config_name(self) -> str:
+    def _gpg_key_id(self) -> str:
         """
         :return:
-            The name of the configuration that mash is to be using.
+            The GPG key identifier by which packages must be signed to be
+            allowed into the composed package repository.
         """
-        # We assume a mash configuration exists whose name matches the tag.
+        # Koji requires key in lowercase, at least as of Koji 1.17.
+        return self.config.get_repo(self._tag)[GPG_KEY_ID].lower()
+
+    @property
+    def _repo_config_name(self) -> str:
+        """
+        :return:
+            The name of the smashd configuration section to be used.
+        """
         return self._tag
 
-    @property
-    def _mash_out_dir(self) -> str:
-        """
-        :return:
-            The file system path to where mash is putting the output.
-        """
-        # mash output goes into an automatically created subdir
-        return os.path.join(self._work, self._tag)
-
-    @property
-    def _relative_dir(self) -> str:
-        """
-        :return:
-            The relative file system path where the mash result should land.
-        """
-        return self.config.get_repo(self._tag)[MASH_PATH]
-
-    @property
-    def _repo_dir(self) -> str:
-        """
-        :return:
-            The file system path to the mashed package repositories are to land.
-            This value comes from the smashd.conf file.
-        """
-        return self.config.smashd_repo_dir
-
-    def _mash_tag(self):
-        """
-        Use the mash tool to extract rpms from Koji for one build tag.
-
-        :return:
-            ``True`` iff the mash operation was successful.
-        """
-        _log.info(
-            f'mashing into {self._mash_out_dir!r} '
-            f'using config {self._mash_config_name!r}'
-        )
-        # TODO - eval --previous option as better means for update
-        # NB: don't pass self._mash_out_dir here; see comments in that property
-        args = [MASH, '-o', self._work, self._mash_config_name]
-        _log.debug(f'about to call {args!r}')
-        try:
-            out = check_output(args, stderr=STDOUT)
-        except CalledProcessError as e:
-            _log.error(f'{e}\noutput:\n{e.output.decode()}')
-            return False
-        else:
-            for line in out.decode().splitlines():
-                # Strip mash's log prefix of date, time, argv[0].
-                _log.debug(f'mash: {line[26:]}')
-            return True
-
-    def _sync_repo(self):
-        """
-        Synchronize the "real" package repo with our just mashed one.
-
-        This actually accomplishes several non-obvious goals::
-
-         - Owner/group attributes can be adjusted to be appropriate for
-           exposing which may differ from what mash uses.
-         - Disruption to the public area is minimized.  Remember that mash
-           itself completely erases a repository and its meta-data before
-           rebuilding it.
-        """
-        # NB: empty dir is to force a trailing slash for correct rsync behavior
-        try:
-            source = os.path.join(self._mash_out_dir, self._relative_dir, '')
-            target = os.path.join(self._repo_dir, self._relative_dir, '')
-        except ConfigurationError as e:
-            _log.error(f'cannot sync repo: {e}')
-        else:
-            _log.info(f'synchronizing {target!r} with {source!r}')
-            args = RSYNC_ARGS + [source, target]
-            _log.debug(f'about to call {args!r}')
-            try:
-                out = check_output(args, stderr=STDOUT)
-            except CalledProcessError as e:
-                _log.error(f'{e}\noutput:\n{e.output.decode()}')
-            else:
-                for line in out.decode().splitlines():
-                    _log.debug(f'rsync: {line}')
-
     def run(self):
-        """Mash a package repository for each tag."""
-        _log.info('mashing started')
+        """Create/update a package repository for each tag."""
+        _log.info('dist-repo creation started')
         for self._tag in self.tags:
-            with TemporaryDirectory(prefix=f'{self}-') as self._work:
-                _log.debug(f'created work directory {self._work!r}')
-                if self._mash_tag():
-                    self._sync_repo()
-        _log.info('mashing completed')
+            _log.info(
+                f'composing dist-repo using config {self._repo_config_name!r}'
+            )
+            # Task submissions will run async.
+            KojiDistRepo(self._tag, self._gpg_key_id)
+        _log.info('dist-repo creation completed')
