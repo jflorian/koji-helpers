@@ -1,6 +1,6 @@
 # coding=utf-8
 
-# Copyright 2017-2018 John Florian <jflorian@doubledog.org>
+# Copyright 2017-2019 John Florian <jflorian@doubledog.org>
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This file is part of koji-helpers.
@@ -29,7 +29,7 @@ CREATED_TASK_PATTERN = re.compile(r'Created task: *(\d+)', re.MULTILINE)
 STATE_PATTERN = re.compile(r'State: *(\S+)', re.MULTILINE)
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
-__copyright__ = """2017-2018 John Florian"""
+__copyright__ = """2017-2019 John Florian"""
 
 
 class KojiCommand(object):
@@ -123,6 +123,28 @@ class KojiBuildInfo(KojiCommand):
             else:
                 ready |= line.strip() == 'RPMs:'
         return rpms
+
+
+class KojiDistRepo(KojiCommand):
+    """
+    A wrapper around the `koji dist-repo` command.
+    """
+
+    def __init__(self, tag: str, key_id: str):
+        """
+        :param tag:
+            Tag for which the distribution repo is to be built.
+
+        :param key_id:
+            GPG signing key ID with which RPMs must be signed if they are to
+            be included in the repo.
+        """
+        self.tag = tag
+        self.key_id = key_id
+        super().__init__(['dist-repo', '--with-src', self.tag, self.key_id])
+
+    def __str__(self) -> str:
+        return f'<Koji DistRepo tag={self.tag!r} key_id={self.key_id}>'
 
 
 class KojiTaskInfo(KojiCommand):
