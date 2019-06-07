@@ -288,6 +288,35 @@ class KojiWaitRepo(KojiCommand):
         )
 
 
+class KojiWatchTasks(KojiCommand):
+    """
+    A wrapper around the `koji watch-tasks` command.
+    """
+
+    def __init__(self, channel: str = None, user: str = None):
+        """
+        :param channel:
+            Only tasks in this channel.
+
+        :param user:
+            Only tasks for this user.
+        """
+        self.channel = channel
+        self.user = user
+        args = ['watch-tasks']
+        if channel:
+            args += ['--channel', channel]
+        if user:
+            args += ['--user', user]
+        super().__init__(args)
+
+    def __str__(self) -> str:
+        return (f'<Koji WatchTasks '
+                f'in channel {self.channel!r} '
+                f'for user {self.user!r} '
+                f'>')
+
+
 class KojiWriteSignedRpm(KojiCommand):
     """
     A wrapper around the `koji write-signed-rpm` command.

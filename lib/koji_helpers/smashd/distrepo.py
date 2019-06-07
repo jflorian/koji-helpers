@@ -19,8 +19,9 @@
 # koji-helpers.  If not, see <http://www.gnu.org/licenses/>.
 from logging import getLogger
 
+from koji_helpers import USER
 from koji_helpers.config import Configuration, GPG_KEY_ID
-from koji_helpers.koji import KojiDistRepo
+from koji_helpers.koji import KojiDistRepo, KojiWatchTasks
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
 __copyright__ = """2016-2019 John Florian"""
@@ -84,13 +85,25 @@ class DistRepoMaker(object):
         """
         return self._tag
 
+    @staticmethod
+    def _log_koji_output(output: str):
+        for line in output.splitlines():
+            _log.info('koji: %s', line)
+
     def run(self):
         """Create/update a package repository for each tag."""
         _log.info('dist-repo creation started')
         for self._tag in self.tags:
             _log.info(
-                f'composing dist-repo using config {self._repo_config_name!r}'
+                f'submitting dist-repo task '
+                f'using config {self._repo_config_name!r}'
             )
             # Task submissions will run async.
-            KojiDistRepo(self._tag, self._gpg_key_id)
+            submission = KojiDistRepo(self._tag, self._gpg_key_id)
+            self._log_koji_output(submission.output)
+        # Wait for all to complete so that notifications aren't sent before the
+        # repos are ready.
+        _log.info('waiting for dist-repo tasks to complete')
+        watch = KojiWatchTasks(channel='createrepo', user=USER)
+        self._log_koji_output(watch.output)
         _log.info('dist-repo creation completed')
