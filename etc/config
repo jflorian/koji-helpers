@@ -21,12 +21,6 @@
 
 
 [smashd]
-# repo_dir is the name of the directory that is to be synchronized with the
-# repository tree composited from each of the mashed repositories.  This
-# must be an absolute path and typically would be the longest path that all
-# package repositories have in common.
-;repo_dir = /mnt/rpms
-
 # exclude_tags is a space-separated list of tags which smashd should ignore.
 ;exclude_tags = trashcan
 
@@ -47,7 +41,6 @@
 # look like the following example:
 
 ;[repository f25-testing]
-;mash_path = fedora/testing/25
 ;gpg_key_id = A9B8C7D6
 ;sigul_key_name = fedora_25
 ;sigul_key_pass = SuperSecretSigningPassphrase

@@ -32,6 +32,4 @@ USER = 'repomgr'
 
 # external executables
 KOJI = '/usr/bin/koji'
-MASH = '/usr/bin/mash'
-RSYNC = '/usr/bin/rsync'
 SIGUL = '/usr/bin/sigul'

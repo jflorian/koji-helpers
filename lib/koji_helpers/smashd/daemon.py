@@ -28,7 +28,6 @@ from doubledog.quiescence import QuiescenceMonitor
 from koji_helpers import CONFIG
 from koji_helpers.config import Configuration
 from koji_helpers.smashd.distrepo import DistRepoMaker
-from koji_helpers.smashd.masher import Masher
 from koji_helpers.smashd.notifier import Notifier
 from koji_helpers.smashd.signer import Signer
 from koji_helpers.smashd.tag_history import KojiTagHistory
@@ -48,8 +47,7 @@ class SignAndComposeDaemon(object):
     activity to quiesce for a specified period.  Once quiescence is achieved,
     the daemon will:
         1. sign RPMs for the affected builds
-        2. mash new temporary package repositories for the affected tags
-        3. synchronize the exposed package repositories with the temporary ones
+        2. generate new package repositories for the affected tags
 
     This daemon does not fork, exit, etc. in the classic sense, but does run
     indefinitely performing the task described above.  This operates entirely as
@@ -169,7 +167,6 @@ class SignAndComposeDaemon(object):
                     start_time = self.__now
                     Signer(changes, self.config)
                     tags = changes.keys()
-                    # Masher(tags, self.config)
                     DistRepoMaker(tags, self.config)
                     elapsed_time = self.__now - start_time
                     self.last_run = self.__mark

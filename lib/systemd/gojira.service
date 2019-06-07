@@ -1,3 +1,6 @@
+# This file is part of koji-helpers.
+# Copyright 2016-2019 John Florian <jflorian@doubledog.org>
+# SPDX-License-Identifier: GPL-3.0-or-later
 [Unit]
 Description=Gorira to update Koji with changes in external dependencies
 After=network.target

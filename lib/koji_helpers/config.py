@@ -1,6 +1,6 @@
 # coding=utf-8
 
-# Copyright 2016-2018 John Florian <jflorian@doubledog.org>
+# Copyright 2016-2019 John Florian <jflorian@doubledog.org>
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This file is part of koji-helpers.
@@ -31,17 +31,15 @@ SMASHD = 'smashd'
 # option names
 EXCLUDE_TAGS = 'exclude_tags'
 GPG_KEY_ID = 'gpg_key_id'
-MASH_PATH = 'mash_path'
 MAX_INTERVAL = 'max_interval'
 MIN_INTERVAL = 'min_interval'
 NOTIFICATIONS_FROM = 'notifications_from'
 NOTIFICATIONS_TO = 'notifications_to'
-REPO_DIR = 'repo_dir'
 SIGUL_KEY_NAME = 'sigul_key_name'
 SIGUL_KEY_PASS = 'sigul_key_pass'
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
-__copyright__ = """2016-2018 John Florian"""
+__copyright__ = """2016-2019 John Florian"""
 
 _log = getLogger(__name__)
 
@@ -80,7 +78,6 @@ class Configuration(object):
             config.read(self.filename)
             smashd = config[SMASHD]
             self.smashd_exclude_tags = smashd.get(EXCLUDE_TAGS).split()
-            self.smashd_repo_dir = smashd.get(REPO_DIR)
             self.smashd_notifications_from = smashd.get(NOTIFICATIONS_FROM)
             self.smashd_notifications_to = smashd.get( NOTIFICATIONS_TO).split()
             self.smashd_min_interval = smashd.getfloat(MIN_INTERVAL, 5)
