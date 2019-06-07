@@ -40,6 +40,16 @@ class KojiCommand(object):
     while Koji itself remains stuck in Python2.  It also lends a modicum of
     API abstraction which may be beneficial given its deep ties to Koji while
     remaining an external, unassociated project.
+
+    .. attribute:: args
+
+        The Koji CLI command, options and arguments as passed to the
+        constructor after normalizing to the `list` type.
+
+
+    .. attribute:: output
+
+        The captured and decoded output of stdout and stderr (merged).
     """
 
     def __init__(self, args):
@@ -153,6 +163,10 @@ class KojiTaskInfo(KojiCommand):
     """
 
     def __init__(self, task_id: str):
+        """
+        :param task_id:
+            The ID of the task to be queried.
+        """
         self.task_id = task_id
         super().__init__(['taskinfo', self.task_id])
 
@@ -237,6 +251,10 @@ class KojiRegenRepo(KojiCommand):
     """
 
     def __init__(self, tag: str):
+        """
+        :param tag:
+            The build tag for which regeneration is to occur.
+        """
         self.tag = tag
         super().__init__(['regen-repo', self.tag])
 
@@ -257,6 +275,10 @@ class KojiWaitRepo(KojiCommand):
     """
 
     def __init__(self, tag: str):
+        """
+        :param tag:
+            The build tag for which regeneration is to be awaited.
+        """
         self.tag = tag
         super().__init__(['wait-repo', self.tag])
 
