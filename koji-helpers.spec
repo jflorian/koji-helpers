@@ -103,6 +103,7 @@ exit 0
 %license LICENSE
 
 %{_bindir}/gojira
+%{_bindir}/klean
 %{_bindir}/smashd
 %{_unitdir}/gojira.service
 %{_unitdir}/smashd.service

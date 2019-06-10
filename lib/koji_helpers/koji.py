@@ -25,6 +25,9 @@ from subprocess import CalledProcessError, STDOUT, check_output
 from koji_helpers import KOJI
 from koji_helpers.logging import KojiHelperLoggerAdapter
 
+# The directory name where output of `koji dist-repo` lands.
+REPOS_DIST = 'repos-dist'
+
 CREATED_TASK_PATTERN = re.compile(r'Created task: *(\d+)', re.MULTILINE)
 STATE_PATTERN = re.compile(r'State: *(\S+)', re.MULTILINE)
 

@@ -11,6 +11,7 @@ setup(
     packages=[
         'koji_helpers',
         'koji_helpers.gojira',
+        'koji_helpers.klean',
         'koji_helpers.smashd',
     ],
     package_dir={'': 'lib'},
@@ -21,6 +22,7 @@ setup(
     ],
     scripts=[
         'bin/gojira',
+        'bin/klean',
         'bin/smashd',
     ],
     url='https://www.doubledog.org/git/koji-helpers.git',
