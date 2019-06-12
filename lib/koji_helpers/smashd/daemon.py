@@ -1,6 +1,6 @@
 # coding=utf-8
 
-# Copyright 2016-2018 John Florian <jflorian@doubledog.org>
+# Copyright 2016-2019 John Florian <jflorian@doubledog.org>
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This file is part of koji-helpers.
@@ -27,7 +27,7 @@ from doubledog.quiescence import QuiescenceMonitor
 
 from koji_helpers import CONFIG
 from koji_helpers.config import Configuration
-from koji_helpers.smashd.masher import Masher
+from koji_helpers.smashd.distrepo import DistRepoMaker
 from koji_helpers.smashd.notifier import Notifier
 from koji_helpers.smashd.signer import Signer
 from koji_helpers.smashd.tag_history import KojiTagHistory
@@ -35,20 +35,19 @@ from koji_helpers.smashd.tag_history import KojiTagHistory
 SMASHD_STATE = '/var/lib/koji-helpers/smashd/state'
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
-__copyright__ = """2016-2018 John Florian"""
+__copyright__ = """2016-2019 John Florian"""
 
 _log = getLogger(__name__)
 
 
-class SignAndMashDaemon(object):
+class SignAndComposeDaemon(object):
     """
     A pseudo-daemon that monitors a Koji Hub for events that involve tag
     operations.  When such events are detected, the daemon waits for the
     activity to quiesce for a specified period.  Once quiescence is achieved,
     the daemon will:
         1. sign RPMs for the affected builds
-        2. mash new temporary package repositories for the affected tags
-        3. synchronize the exposed package repositories with the temporary ones
+        2. generate new package repositories for the affected tags
 
     This daemon does not fork, exit, etc. in the classic sense, but does run
     indefinitely performing the task described above.  This operates entirely as
@@ -58,7 +57,7 @@ class SignAndMashDaemon(object):
 
     def __init__(self, config_name: str = CONFIG):
         """
-        Initialize the SignAndMashDaemon object.
+        Initialize the SignAndComposeDaemon object.
 
         :param config_name:
             The name of the configuration file that governs this daemon's
@@ -71,16 +70,12 @@ class SignAndMashDaemon(object):
         self.__mark = None
 
     def __repr__(self) -> str:
-        return ('{}.{}('
-                'config_name={!r}, '
-                ')').format(
-            self.__module__, self.__class__.__name__,
-            self.config.filename,
-        )
+        return (f'{self.__module__}.{self.__class__.__name__}('
+                f'config_name={self.config.filename!r}, '
+                f')')
 
     def __str__(self) -> str:
-        return 'SignAndMashDaemon'.format(
-        )
+        return f'SignAndComposeDaemon'
 
     @property
     def last_run(self):
@@ -89,18 +84,14 @@ class SignAndMashDaemon(object):
                 with open(SMASHD_STATE) as f:
                     self.__last_run = json.load(f)
                 _log.debug(
-                    'loaded last-run of {!r} from {!r}'.format(
-                        self.__last_run,
-                        SMASHD_STATE,
-                    )
+                    f'loaded last-run of {self.__last_run!r} '
+                    f'from {SMASHD_STATE!r}'
                 )
             except FileNotFoundError:
                 self.__last_run = self.__now_iso_format
                 _log.debug(
-                    'initialized last-run to {!r} since {!r} is absent'.format(
-                        self.__last_run,
-                        SMASHD_STATE,
-                    )
+                    f'initialized last-run to {self.__last_run!r} '
+                    f'since {SMASHD_STATE!r} is absent'
                 )
         return self.__last_run
 
@@ -109,9 +100,7 @@ class SignAndMashDaemon(object):
         self.__last_run = value
         with open(SMASHD_STATE, 'w') as f:
             json.dump(self.__last_run, f)
-        _log.debug(
-            'saved last-run to {!r}'.format(self.__last_run, SMASHD_STATE)
-        )
+        _log.debug(f'saved last-run to {self.__last_run!r}')
 
     @property
     def __now(self):
@@ -148,11 +137,8 @@ class SignAndMashDaemon(object):
             self.config.smashd_max_interval
         )
         _log.info(
-            'check-interval/quiescent-period adjusted to '
-            '{:0,.1f}/{:0,.1f} seconds'.format(
-                self._check_interval,
-                self._monitor.period,
-            ),
+            f'check-interval/quiescent-period adjusted to '
+            f'{self._check_interval:0,.1f}/{self._monitor.period:0,.1f} seconds'
         )
 
     def __get_present_changes(self):
@@ -161,7 +147,7 @@ class SignAndMashDaemon(object):
         return hist.changed_tags
 
     def __rest(self):
-        _log.debug('sleeping {} seconds'.format(self._check_interval))
+        _log.debug(f'sleeping {self._check_interval} seconds')
         sleep(self._check_interval)
 
     def run(self):
@@ -171,9 +157,7 @@ class SignAndMashDaemon(object):
                                           changes)
         while True:
             self.__mark = self.__now_iso_format
-            _log.debug(
-                'checking for tag events since {!r}'.format(self.last_run)
-            )
+            _log.debug(f'checking for tag events since {self.last_run!r}')
             changes = self.__get_present_changes()
             self._monitor.update(changes)
             if changes:
@@ -183,7 +167,7 @@ class SignAndMashDaemon(object):
                     start_time = self.__now
                     Signer(changes, self.config)
                     tags = changes.keys()
-                    Masher(tags, self.config)
+                    DistRepoMaker(tags, self.config)
                     elapsed_time = self.__now - start_time
                     self.last_run = self.__mark
                     Notifier(changes, self.config)

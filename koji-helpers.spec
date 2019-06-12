@@ -7,8 +7,8 @@
 %global repomgr_user repomgr
 
 Name:           koji-helpers
-Version:        0.7.0
-Release:        3%{?dist}
+Version:        1.0.0
+Release:        1%{?dist}
 
 # {{{1 package meta-data
 Summary:        Supplementary tools to help in a Koji deployment
@@ -27,13 +27,11 @@ BuildRequires:  systemd
 Requires(pre):  shadow-utils
 
 Requires:       koji
-Requires:       mash
 Requires:       python%{python3_pkgversion} >= %{min_py_ver}
 Requires:       python%{python3_pkgversion}-PyYAML
 Requires:       python%{python3_pkgversion}-requests
 Requires:       python3-doubledog >= 3.0.0, python3-doubledog < 4.0.0
 Requires:       repoview
-Requires:       rsync
 Requires:       sigul
 Requires:       systemd
 
@@ -50,6 +48,9 @@ This package provides tools that supplement the standard Koji packages.
     that are ready for use with tools such as yum and dnf.  The builds are
     sourced from Koji and build-tags dictate the target package repository
     through a flexible mapping.
+- klean:
+    This tool (and service) will purge old artifacts that Koji has generated
+    which would otherwise accumulate unconstrained and waste storage.
 
 # {{{1 prep & build
 %prep
@@ -65,6 +66,8 @@ make build
 install -Dp -m 0600 etc/config                  %{buildroot}%{_sysconfdir}/%{name}/config
 install -Dp -m 0644 etc/logging.yaml            %{buildroot}%{_sysconfdir}/%{name}/logging.yaml
 install -Dp -m 0644 lib/systemd/gojira.service  %{buildroot}%{_unitdir}/gojira.service
+install -Dp -m 0644 lib/systemd/klean.service  %{buildroot}%{_unitdir}/klean.service
+install -Dp -m 0644 lib/systemd/klean.timer  %{buildroot}%{_unitdir}/klean.timer
 install -Dp -m 0644 lib/systemd/smashd.service  %{buildroot}%{_unitdir}/smashd.service
 
 install -d -m 0755 %{buildroot}%{_var}/lib/%{name}/gojira
@@ -81,16 +84,19 @@ exit 0
 # {{{1 post
 %post
 %systemd_post gojira.service
+%systemd_post klean.service
 %systemd_post smashd.service
 
 # {{{1 preun
 %preun
 %systemd_preun gojira.service
+%systemd_preun klean.service
 %systemd_preun smashd.service
 
 # {{{1 postun
 %postun
 %systemd_postun_with_restart gojira.service
+%systemd_postun_with_restart klean.service
 %systemd_postun_with_restart smashd.service
 
 # {{{1 files
@@ -105,8 +111,11 @@ exit 0
 %license LICENSE
 
 %{_bindir}/gojira
+%{_bindir}/klean
 %{_bindir}/smashd
 %{_unitdir}/gojira.service
+%{_unitdir}/klean.service
+%{_unitdir}/klean.timer
 %{_unitdir}/smashd.service
 %{python3_sitelib}/%{python_package_name}/*
 %{python3_sitelib}/*egg-info
@@ -121,6 +130,26 @@ exit 0
 
 # {{{1 changelog
 %changelog
+* Wed Jun 12 2019 John Florian <jflorian@doubledog.org> 1.0.0-1
+- New - klean service/timer units for systemd (jflorian@doubledog.org)
+- New - klean tool (jflorian@doubledog.org)
+- New - Configuration.smashd_koji_dir setting (jflorian@doubledog.org)
+- Drop - Masher class and its dependencies (jflorian@doubledog.org)
+- Change - wait for dist-repo task (jflorian@doubledog.org)
+- Change - improve completeness of KojiCommand docs (jflorian@doubledog.org)
+- Change - use DistRepoMaker instead of Masher (jflorian@doubledog.org)
+- Change - transform Masher into DistRepoMaker (in new module)
+  (jflorian@doubledog.org)
+- New - koji_helpers.koji.KojiDistRepo class (jflorian@doubledog.org)
+- New - koji_helpers.smashd.distrepo module (jflorian@doubledog.org)
+- Refactor - rename SignAndMashDaemon to SignAndComposeDaemon
+  (jflorian@doubledog.org)
+- Refactor - use f-string literals instead of format() (jflorian@doubledog.org)
+- Bug - regex patterns should be raw-strings (jflorian@doubledog.org)
+- Bug - Signer.__repr__() yields garbage (jflorian@doubledog.org)
+- Change - [PyCharm] bump SDK to Python 3.7 (jflorian@doubledog.org)
+- New - [tito] targets for Fedora 30 (jflorian@doubledog.org)
+
 * Sun Apr 07 2019 John Florian <jflorian@doubledog.org> 0.7.0-3
 - Change - [spec] delegate Python build to Makefile (jflorian@doubledog.org)
 - Change - [Makefile] clean __pycache__ files too (jflorian@doubledog.org)
@@ -148,27 +177,3 @@ exit 0
 - [tito] - restructure epel targets (jflorian@doubledog.org)
 - Change - [tito] disttag for EL7 (jflorian@doubledog.org)
 - New - [tito] targets for Fedora 28 (jflorian@doubledog.org)
-
-* Thu Feb 01 2018 John Florian <jflorian@doubledog.org> 0.6.2-1
-- Drop - [tito] Fedora 25 release target (jflorian@doubledog.org)
-- Change - replace logging filter with simpler setup (jflorian@doubledog.org)
-- Bug - smashd misconfig handled poorly (jflorian@doubledog.org)
-- New - [tito] targets for Fedora (jflorian@doubledog.org)
-
-* Tue Sep 26 2017 John Florian <jflorian@doubledog.org> 0.6.1-1
-- New - [tito] test-all target (jflorian@doubledog.org)
-- Bug - [Makefile] queryspec returns partial value (jflorian@doubledog.org)
-- New - [Makefile] 'dist' target (jflorian@doubledog.org)
-- New - [Makefile] 'clean' target (jflorian@doubledog.org)
-- New - [Makefile] vim folding for better organization (jflorian@doubledog.org)
-- New - [Makefile] 'help' target (jflorian@doubledog.org)
-- Change - [Makefile] don't hide exec of 'git archive' (jflorian@doubledog.org)
-- Refactor - [Makefile] rename all vars (jflorian@doubledog.org)
-- Bug - [gojira] Thread dies with incomplete metadata (jflorian@doubledog.org)
-- Bug - [gojira] Thread exceptions may not be logged (jflorian@doubledog.org)
-- Change - give Gorjira threads a meaningful name (jflorian@doubledog.org)
-- Change - logging to syslog doesn't capture level (jflorian@doubledog.org)
-- Drop - default defattr directive (jflorian@doubledog.org)
-- Bug - [smashd] repoview is not updated in public view
-  (jflorian@doubledog.org)
-- Drop - Dart-specific tito releasers (jflorian@doubledog.org)

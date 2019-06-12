@@ -1,5 +1,8 @@
+# This file is part of koji-helpers.
+# Copyright 2016-2019 John Florian <jflorian@doubledog.org>
+# SPDX-License-Identifier: GPL-3.0-or-later
 [Unit]
-Description=smashd to sign and mash Koji builds into usable package repositories
+Description=smashd to sign Koji builds and generate usable package repositories
 After=network.target
 
 [Service]

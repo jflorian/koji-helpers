@@ -1,6 +1,6 @@
 # coding=utf-8
 
-# Copyright 2017-2018 John Florian <jflorian@doubledog.org>
+# Copyright 2017-2019 John Florian <jflorian@doubledog.org>
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This file is part of koji-helpers.
@@ -25,11 +25,14 @@ from subprocess import CalledProcessError, STDOUT, check_output
 from koji_helpers import KOJI
 from koji_helpers.logging import KojiHelperLoggerAdapter
 
+# The directory name where output of `koji dist-repo` lands.
+REPOS_DIST = 'repos-dist'
+
 CREATED_TASK_PATTERN = re.compile(r'Created task: *(\d+)', re.MULTILINE)
 STATE_PATTERN = re.compile(r'State: *(\S+)', re.MULTILINE)
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
-__copyright__ = """2017-2018 John Florian"""
+__copyright__ = """2017-2019 John Florian"""
 
 
 class KojiCommand(object):
@@ -40,6 +43,16 @@ class KojiCommand(object):
     while Koji itself remains stuck in Python2.  It also lends a modicum of
     API abstraction which may be beneficial given its deep ties to Koji while
     remaining an external, unassociated project.
+
+    .. attribute:: args
+
+        The Koji CLI command, options and arguments as passed to the
+        constructor after normalizing to the `list` type.
+
+
+    .. attribute:: output
+
+        The captured and decoded output of stdout and stderr (merged).
     """
 
     def __init__(self, args):
@@ -125,12 +138,38 @@ class KojiBuildInfo(KojiCommand):
         return rpms
 
 
+class KojiDistRepo(KojiCommand):
+    """
+    A wrapper around the `koji dist-repo` command.
+    """
+
+    def __init__(self, tag: str, key_id: str):
+        """
+        :param tag:
+            Tag for which the distribution repo is to be built.
+
+        :param key_id:
+            GPG signing key ID with which RPMs must be signed if they are to
+            be included in the repo.
+        """
+        self.tag = tag
+        self.key_id = key_id
+        super().__init__(['dist-repo', '--with-src', self.tag, self.key_id])
+
+    def __str__(self) -> str:
+        return f'<Koji DistRepo tag={self.tag!r} key_id={self.key_id}>'
+
+
 class KojiTaskInfo(KojiCommand):
     """
     A wrapper around the `koji taskinfo` command.
     """
 
     def __init__(self, task_id: str):
+        """
+        :param task_id:
+            The ID of the task to be queried.
+        """
         self.task_id = task_id
         super().__init__(['taskinfo', self.task_id])
 
@@ -215,6 +254,10 @@ class KojiRegenRepo(KojiCommand):
     """
 
     def __init__(self, tag: str):
+        """
+        :param tag:
+            The build tag for which regeneration is to occur.
+        """
         self.tag = tag
         super().__init__(['regen-repo', self.tag])
 
@@ -235,6 +278,10 @@ class KojiWaitRepo(KojiCommand):
     """
 
     def __init__(self, tag: str):
+        """
+        :param tag:
+            The build tag for which regeneration is to be awaited.
+        """
         self.tag = tag
         super().__init__(['wait-repo', self.tag])
 
@@ -242,6 +289,35 @@ class KojiWaitRepo(KojiCommand):
         return '<Koji WaitRepo {!r}>'.format(
             self.tag,
         )
+
+
+class KojiWatchTasks(KojiCommand):
+    """
+    A wrapper around the `koji watch-tasks` command.
+    """
+
+    def __init__(self, channel: str = None, user: str = None):
+        """
+        :param channel:
+            Only tasks in this channel.
+
+        :param user:
+            Only tasks for this user.
+        """
+        self.channel = channel
+        self.user = user
+        args = ['watch-tasks']
+        if channel:
+            args += ['--channel', channel]
+        if user:
+            args += ['--user', user]
+        super().__init__(args)
+
+    def __str__(self) -> str:
+        return (f'<Koji WatchTasks '
+                f'in channel {self.channel!r} '
+                f'for user {self.user!r} '
+                f'>')
 
 
 class KojiWriteSignedRpm(KojiCommand):

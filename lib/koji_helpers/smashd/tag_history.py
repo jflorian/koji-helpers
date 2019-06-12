@@ -1,6 +1,6 @@
 # coding=utf-8
 
-# Copyright 2016-2018 John Florian <jflorian@doubledog.org>
+# Copyright 2016-2019 John Florian <jflorian@doubledog.org>
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This file is part of koji-helpers.
@@ -24,7 +24,7 @@ from logging import getLogger
 from koji_helpers.koji import KojiListHistory
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
-__copyright__ = """2016-2018 John Florian"""
+__copyright__ = """2016-2019 John Florian"""
 
 # keys
 BUILD = 'build'
@@ -37,10 +37,8 @@ USER = 'user'
 
 # pre-compiled regex
 TAGGED_RE = re.compile(
-    '^(?P<{}>.*\d{{4}}) (?P<{}>\S+) (?P<{}>tagged into|untagged from) '
-    '(?P<{}>\S+) by (?P<{}>\S+).*$'.format(
-        TIME, BUILD, DIRECTION, TAG, USER,
-    )
+    fr'^(?P<{TIME}>.*\d{{4}}) (?P<{BUILD}>\S+) (?P<{DIRECTION}>'
+    fr'tagged into|untagged from) (?P<{TAG}>\S+) by (?P<{USER}>\S+).*$'
 )
 
 _log = getLogger(__name__)
@@ -72,12 +70,11 @@ class KojiTagHistory(object):
         self.exclude_tags = exclude_tags
 
     def __repr__(self) -> str:
-        return '{}.{}(after={!r}, before={!r}, exclude_tags={!r})'.format(
-            self.__module__, self.__class__.__name__,
-            self.after,
-            self.before,
-            self.exclude_tags,
-        )
+        return (f'{self.__module__}.{self.__class__.__name__}('
+                f'after={self.after!r}, '
+                f'before={self.before!r}, '
+                f'exclude_tags={self.exclude_tags!r}, '
+                f')')
 
     @property
     def __koji_history(self):
@@ -91,10 +88,8 @@ class KojiTagHistory(object):
             if m:
                 m = m.groupdict()
                 _log.debug(
-                    'tag {!r} affected by build {!r} '
-                    'by {!r} request of {!r} at {!r}'.format(
-                        m[TAG], m[BUILD], m[DIRECTION], m[USER], m[TIME],
-                    )
+                    f'tag {m[TAG]!r} affected by build {m[BUILD]!r} '
+                    f'by {m[DIRECTION]!r} request of {m[USER]!r} at {m[TIME]!r}'
                 )
                 changes.append(m)
         return changes
