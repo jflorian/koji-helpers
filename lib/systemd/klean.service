@@ -1,0 +1,9 @@
+# This file is part of koji-helpers.
+# Copyright 2019 John Florian <jflorian@doubledog.org>
+# SPDX-License-Identifier: GPL-3.0-or-later
+[Unit]
+Description=klean to purge old Koji cruft
+
+[Service]
+ExecStart=/usr/bin/klean
+Type=simple

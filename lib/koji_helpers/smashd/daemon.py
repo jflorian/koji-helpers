@@ -27,7 +27,7 @@ from doubledog.quiescence import QuiescenceMonitor
 
 from koji_helpers import CONFIG
 from koji_helpers.config import Configuration
-from koji_helpers.smashd.masher import Masher
+from koji_helpers.smashd.distrepo import DistRepoMaker
 from koji_helpers.smashd.notifier import Notifier
 from koji_helpers.smashd.signer import Signer
 from koji_helpers.smashd.tag_history import KojiTagHistory
@@ -40,15 +40,14 @@ __copyright__ = """2016-2019 John Florian"""
 _log = getLogger(__name__)
 
 
-class SignAndMashDaemon(object):
+class SignAndComposeDaemon(object):
     """
     A pseudo-daemon that monitors a Koji Hub for events that involve tag
     operations.  When such events are detected, the daemon waits for the
     activity to quiesce for a specified period.  Once quiescence is achieved,
     the daemon will:
         1. sign RPMs for the affected builds
-        2. mash new temporary package repositories for the affected tags
-        3. synchronize the exposed package repositories with the temporary ones
+        2. generate new package repositories for the affected tags
 
     This daemon does not fork, exit, etc. in the classic sense, but does run
     indefinitely performing the task described above.  This operates entirely as
@@ -58,7 +57,7 @@ class SignAndMashDaemon(object):
 
     def __init__(self, config_name: str = CONFIG):
         """
-        Initialize the SignAndMashDaemon object.
+        Initialize the SignAndComposeDaemon object.
 
         :param config_name:
             The name of the configuration file that governs this daemon's
@@ -76,7 +75,7 @@ class SignAndMashDaemon(object):
                 f')')
 
     def __str__(self) -> str:
-        return f'SignAndMashDaemon'
+        return f'SignAndComposeDaemon'
 
     @property
     def last_run(self):
@@ -168,7 +167,7 @@ class SignAndMashDaemon(object):
                     start_time = self.__now
                     Signer(changes, self.config)
                     tags = changes.keys()
-                    Masher(tags, self.config)
+                    DistRepoMaker(tags, self.config)
                     elapsed_time = self.__now - start_time
                     self.last_run = self.__mark
                     Notifier(changes, self.config)

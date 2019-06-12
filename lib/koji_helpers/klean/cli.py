@@ -1,6 +1,6 @@
 # coding=utf-8
 
-# Copyright 2016-2019 John Florian <jflorian@doubledog.org>
+# Copyright 2019 John Florian <jflorian@doubledog.org>
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This file is part of koji-helpers.
@@ -23,21 +23,21 @@ import logging.config
 import yaml
 
 from koji_helpers import LOGGING_CONFIG
-from koji_helpers.smashd.daemon import SignAndComposeDaemon
+from koji_helpers.klean.tool import KleanTool
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
-__copyright__ = """2016-2019 John Florian"""
+__copyright__ = """2019 John Florian"""
 
 
-class SmashdCLI(object):
+class KleanCLI(object):
     """
-    A basic command-line interface for startup of the SignAndComposeDaemon.
+    A basic command-line interface for startup of the Klean tool.
     """
 
     def __init__(self, ):
         """
-        Initialize the SmashdCLI object.
+        Initialize the KleanCLI object.
         """
         with open(LOGGING_CONFIG) as f:
             logging.config.dictConfig(yaml.safe_load(f.read()))
-        SignAndComposeDaemon().run()
+        KleanTool().run()

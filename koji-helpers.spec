@@ -27,13 +27,11 @@ BuildRequires:  systemd
 Requires(pre):  shadow-utils
 
 Requires:       koji
-Requires:       mash
 Requires:       python%{python3_pkgversion} >= %{min_py_ver}
 Requires:       python%{python3_pkgversion}-PyYAML
 Requires:       python%{python3_pkgversion}-requests
 Requires:       python3-doubledog >= 3.0.0, python3-doubledog < 4.0.0
 Requires:       repoview
-Requires:       rsync
 Requires:       sigul
 Requires:       systemd
 
@@ -50,6 +48,9 @@ This package provides tools that supplement the standard Koji packages.
     that are ready for use with tools such as yum and dnf.  The builds are
     sourced from Koji and build-tags dictate the target package repository
     through a flexible mapping.
+- klean:
+    This tool (and service) will purge old artifacts that Koji has generated
+    which would otherwise accumulate unconstrained and waste storage.
 
 # {{{1 prep & build
 %prep
@@ -65,6 +66,8 @@ make build
 install -Dp -m 0600 etc/config                  %{buildroot}%{_sysconfdir}/%{name}/config
 install -Dp -m 0644 etc/logging.yaml            %{buildroot}%{_sysconfdir}/%{name}/logging.yaml
 install -Dp -m 0644 lib/systemd/gojira.service  %{buildroot}%{_unitdir}/gojira.service
+install -Dp -m 0644 lib/systemd/klean.service  %{buildroot}%{_unitdir}/klean.service
+install -Dp -m 0644 lib/systemd/klean.timer  %{buildroot}%{_unitdir}/klean.timer
 install -Dp -m 0644 lib/systemd/smashd.service  %{buildroot}%{_unitdir}/smashd.service
 
 install -d -m 0755 %{buildroot}%{_var}/lib/%{name}/gojira
@@ -81,16 +84,19 @@ exit 0
 # {{{1 post
 %post
 %systemd_post gojira.service
+%systemd_post klean.service
 %systemd_post smashd.service
 
 # {{{1 preun
 %preun
 %systemd_preun gojira.service
+%systemd_preun klean.service
 %systemd_preun smashd.service
 
 # {{{1 postun
 %postun
 %systemd_postun_with_restart gojira.service
+%systemd_postun_with_restart klean.service
 %systemd_postun_with_restart smashd.service
 
 # {{{1 files
@@ -105,8 +111,11 @@ exit 0
 %license LICENSE
 
 %{_bindir}/gojira
+%{_bindir}/klean
 %{_bindir}/smashd
 %{_unitdir}/gojira.service
+%{_unitdir}/klean.service
+%{_unitdir}/klean.timer
 %{_unitdir}/smashd.service
 %{python3_sitelib}/%{python_package_name}/*
 %{python3_sitelib}/*egg-info
