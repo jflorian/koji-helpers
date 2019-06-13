@@ -22,6 +22,15 @@ adheres to [good change log principles](http://keepachangelog.com/).
 
 -->
 
+## [1.0.1] WIP
+### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+- `klean.service` is resource greedy
+### Security
+
 ## [1.0.0] 2019-06-12
 
 This and older versions are only documented in the Git commit history.

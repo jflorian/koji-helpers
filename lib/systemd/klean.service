@@ -7,3 +7,6 @@ Description=klean to purge old Koji cruft
 [Service]
 ExecStart=/usr/bin/klean
 Type=simple
+Nice=19
+IOSchedulingClass=2
+IOSchedulingPriority=7
