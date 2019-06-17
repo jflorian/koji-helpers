@@ -22,9 +22,10 @@ adheres to [good change log principles](http://keepachangelog.com/).
 
 -->
 
-## [1.0.1] WIP
+## [1.1.0] WIP
 ### Added
 ### Changed
+- quiescence periods for `smashd` and `gojira` to be *half* of the duration of the prior work cycle for improved responsiveness
 ### Deprecated
 ### Removed
 ### Fixed

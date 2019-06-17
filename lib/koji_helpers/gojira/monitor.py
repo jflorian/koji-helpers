@@ -1,6 +1,6 @@
 # coding=utf-8
 
-# Copyright 2017-2018 John Florian <jflorian@doubledog.org>
+# Copyright 2017-2019 John Florian <jflorian@doubledog.org>
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This file is part of koji-helpers.
@@ -40,7 +40,7 @@ MIN_INTERVAL = 60
 GOJIRA_STATE = '/var/lib/koji-helpers/gojira/'
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
-__copyright__ = """2017-2018 John Florian"""
+__copyright__ = """2017-2019 John Florian"""
 
 
 class BuildRootDependenciesMonitor(Thread):
@@ -154,16 +154,25 @@ class BuildRootDependenciesMonitor(Thread):
 
     def __adjust_periods(self, elapsed_time):
         """
-        Adjust the quiescent-period to the length of the last work cycle.
+        Adjust the quiescent-period to half the length of the last work cycle.
+
+        Statistically, that leaves the probability of delaying this or the
+        next cycle equal.  Without any quiescence period, a straggling event
+        would have to wait unduly long for present events to be processed.
+        A quiescence period that is the full length of the last work cycle
+        could mean that present events wait unduly long for a straggler that
+        may not be coming.
 
         The check-interval is adjusted to be one quarter of the
         quiescent-period provided the constraint is not violated.
 
         Both are constrained to be no less than MIN_INTERVAL seconds.
+
         :param elapsed_time:
             timedelta of the last work cycle.
         """
-        self._monitor.period = max(MIN_INTERVAL, elapsed_time.total_seconds())
+        last = elapsed_time.total_seconds()
+        self._monitor.period = max(MIN_INTERVAL, last / 2)
         self._check_interval = max(MIN_INTERVAL, self._monitor.period / 4)
         self._log.info(
             'check-interval/quiescent-period adjusted to '
