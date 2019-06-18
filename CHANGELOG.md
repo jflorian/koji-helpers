@@ -22,15 +22,11 @@ adheres to [good change log principles](http://keepachangelog.com/).
 
 -->
 
-## [1.1.0] WIP
-### Added
+## [1.1.0] 2019-06-18
 ### Changed
 - quiescence periods for `smashd` and `gojira` to be *half* of the duration of the prior work cycle for improved responsiveness
-### Deprecated
-### Removed
 ### Fixed
 - `klean.service` is resource greedy
-### Security
 
 ## [1.0.0] 2019-06-12
 

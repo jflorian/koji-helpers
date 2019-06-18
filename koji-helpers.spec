@@ -7,7 +7,7 @@
 %global repomgr_user repomgr
 
 Name:           koji-helpers
-Version:        1.0.0
+Version:        1.1.0
 Release:        1%{?dist}
 
 # {{{1 package meta-data
@@ -130,6 +130,13 @@ exit 0
 
 # {{{1 changelog
 %changelog
+* Tue Jun 18 2019 John Florian <jflorian@doubledog.org> 1.1.0-1
+- Change - improve smashd/gojira responsiveness (jflorian@doubledog.org)
+- Bug - klean.service is resource greedy (jflorian@doubledog.org)
+- New - initial CHANGELOG.md (jflorian@doubledog.org)
+- Drop - [tito] targets for Fedora 28 (jflorian@doubledog.org)
+- New - TODO.md for simple task tracking (jflorian@doubledog.org)
+
 * Wed Jun 12 2019 John Florian <jflorian@doubledog.org> 1.0.0-1
 - New - klean service/timer units for systemd (jflorian@doubledog.org)
 - New - klean tool (jflorian@doubledog.org)
