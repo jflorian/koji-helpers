@@ -116,7 +116,14 @@ class SignAndComposeDaemon(object):
 
     def __adjust_periods(self, elapsed_time):
         """
-        Adjust the quiescent-period to the length of the last work cycle.
+        Adjust the quiescent-period to half the length of the last work cycle.
+
+        Statistically, that leaves the probability of delaying this or the
+        next cycle equal.  Without any quiescence period, a straggling event
+        would have to wait unduly long for present events to be processed.
+        A quiescence period that is the full length of the last work cycle
+        could mean that present events wait unduly long for a straggler that
+        may not be coming.
 
         The check-interval is adjusted to be one quarter of the
         quiescent-period provided the constraint is not violated.
@@ -129,7 +136,7 @@ class SignAndComposeDaemon(object):
         """
         last = elapsed_time.total_seconds()
         self._monitor.period = min(
-            max(last, self.config.smashd_min_interval),
+            max(last / 2, self.config.smashd_min_interval),
             self.config.smashd_max_interval
         )
         self._check_interval = min(
