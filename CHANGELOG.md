@@ -22,6 +22,15 @@ adheres to [good change log principles](http://keepachangelog.com/).
 
 -->
 
+## [1.1.1] WIP
+### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+- `klean` crashes if the `latest` link is missing for some reason
+### Security
+
 ## [1.1.0] 2019-06-18
 ### Changed
 - quiescence periods for `smashd` and `gojira` to be *half* of the duration of the prior work cycle for improved responsiveness

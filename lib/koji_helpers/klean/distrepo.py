@@ -75,7 +75,11 @@ class DistRepoCleaner(object):
                 _log.info(f'no dist-repos for tag {self._tag!r}')
                 continue
             repos = list(filter(os.path.isdir, os.listdir(d)))
-            repos.remove('latest')
+            try:
+                repos.remove('latest')
+            except ValueError:
+                _log.info(f'no "latest" dist-repo for tag {self._tag!r}')
+                continue
             repos.sort(key=os.path.getmtime)
             _log.debug(f'discovered {repos!r}')
             keep = 3
