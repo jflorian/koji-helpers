@@ -44,6 +44,10 @@ class KojiCommand(object):
     API abstraction which may be beneficial given its deep ties to Koji while
     remaining an external, unassociated project.
 
+    Note that while many of Koji's commands may sport a `--no-wait` option,
+    Koji will effectively be asynchronous implicitly when run without an
+    attached tty.
+
     .. attribute:: args
 
         The Koji CLI command, options and arguments as passed to the
