@@ -25,6 +25,7 @@ adheres to [good change log principles](http://keepachangelog.com/).
 ## [1.1.1] WIP
 ### Added
 ### Changed
+- `koji_helpers.koji.KojiCommand` now logs (at the DEBUG level) the process args to be executed
 ### Deprecated
 ### Removed
 ### Fixed

@@ -83,6 +83,7 @@ class KojiCommand(object):
     def run(self):
         self._log.debug('starting')
         process_args = [KOJI] + self.args
+        self._log.debug(f'process_args={process_args!r}')
         try:
             self.output = check_output(process_args, stderr=STDOUT).decode()
         except CalledProcessError as e:
