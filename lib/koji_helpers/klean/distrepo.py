@@ -22,7 +22,7 @@ import shutil
 from logging import getLogger
 
 from koji_helpers.config import Configuration
-from koji_helpers.koji import REPOS_DIST
+from koji_helpers.koji import LATEST, REPOS_DIST
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
 __copyright__ = """2016-2019 John Florian"""
@@ -76,9 +76,9 @@ class DistRepoCleaner(object):
                 continue
             repos = list(filter(os.path.isdir, os.listdir(d)))
             try:
-                repos.remove('latest')
+                repos.remove(LATEST)
             except ValueError:
-                _log.info(f'no "latest" dist-repo for tag {self._tag!r}')
+                _log.info(f'no {LATEST!r} dist-repo for tag {self._tag!r}')
                 continue
             repos.sort(key=os.path.getmtime)
             _log.debug(f'discovered {repos!r}')

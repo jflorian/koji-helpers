@@ -28,6 +28,9 @@ from koji_helpers.logging import KojiHelperLoggerAdapter
 # The directory name where output of `koji dist-repo` lands.
 REPOS_DIST = 'repos-dist'
 
+# The symlink name referencing the latest dist-repo created by `koji dist-repo`.
+LATEST = 'latest'
+
 CREATED_TASK_PATTERN = re.compile(r'Created task: *(\d+)', re.MULTILINE)
 STATE_PATTERN = re.compile(r'State: *(\S+)', re.MULTILINE)
 
