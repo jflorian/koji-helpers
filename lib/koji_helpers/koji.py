@@ -31,6 +31,9 @@ REPOS_DIST = 'repos-dist'
 # The symlink name referencing the latest dist-repo created by `koji dist-repo`.
 LATEST = 'latest'
 
+# The directory name where artifacts from `koji build --scratch` land.
+SCRATCH = 'scratch'
+
 CREATED_TASK_PATTERN = re.compile(r'Created task: *(\d+)', re.MULTILINE)
 STATE_PATTERN = re.compile(r'State: *(\S+)', re.MULTILINE)
 
