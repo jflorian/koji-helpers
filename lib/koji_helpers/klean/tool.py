@@ -61,7 +61,6 @@ class KleanTool(object):
 
     def run(self):
         _log.info('started')
-        # Using smashd's repo names as dist tags here.
-        DistRepoCleaner(self.config.repos, self.config)
+        DistRepoCleaner(self.config)
         ScratchBuildCleaner(self.config)
         _log.info('finished')

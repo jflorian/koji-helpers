@@ -42,19 +42,16 @@ class DistRepoCleaner(object):
 
     def __init__(
             self,
-            tags: iter,
             config: Configuration,
     ):
         """
         Initialize the DistRepoCleaner object.
         """
         self.config = config
-        self.tags = tags
         self.run()
 
     def __repr__(self) -> str:
         return (f'{self.__module__}.{self.__class__.__name__}('
-                f'tags={self.tags!r}, '
                 f'config={self.config!r}, '
                 f')')
 
@@ -66,7 +63,8 @@ class DistRepoCleaner(object):
         if self.config.klean_koji_dir is None:
             raise ValueError('klean/koji_dir is not configured')
         _log.info('dist-repo purge started')
-        for self._tag in self.tags:
+        # Using smashd's repo names as dist tags here.
+        for self._tag in self.config.repos:
             d = os.path.join(self.config.klean_koji_dir, REPOS_DIST, self._tag)
             _log.debug(f'searching for old dist-repos under directory {d!r}')
             try:
