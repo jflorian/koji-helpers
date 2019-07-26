@@ -60,9 +60,9 @@ class ScratchBuildCleaner(object):
 
     def run(self):
         """Purge old scratch builds."""
+        _log.info(f'{self} started')
         if self.config.klean_koji_dir is None:
             raise ValueError('klean/koji_dir is not configured')
-        _log.info('scratch-build purge started')
         d = os.path.join(self.config.klean_koji_dir, SCRATCH)
         cutoff = datetime.now() - timedelta(days=90)
         _log.debug(
@@ -84,4 +84,4 @@ class ScratchBuildCleaner(object):
                     shutil.rmtree(p)
                 else:
                     _log.info(f'retaining scratch-build at {p !r}')
-        _log.info('scratch-build purge completed')
+        _log.info(f'{self} completed')

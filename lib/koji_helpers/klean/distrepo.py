@@ -60,9 +60,9 @@ class DistRepoCleaner(object):
 
     def run(self):
         """Purge old package repositories for each tag."""
+        _log.info(f'{self} started')
         if self.config.klean_koji_dir is None:
             raise ValueError('klean/koji_dir is not configured')
-        _log.info('dist-repo purge started')
         # Using smashd's repo names as dist tags here.
         for self._tag in self.config.repos:
             d = os.path.join(self.config.klean_koji_dir, REPOS_DIST, self._tag)
@@ -92,4 +92,4 @@ class DistRepoCleaner(object):
                     shutil.rmtree(repo)
             else:
                 _log.info(f'no old dist-repos for tag {self._tag!r}')
-        _log.info('dist-repo purge completed')
+        _log.info(f'{self} completed')
