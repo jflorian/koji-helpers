@@ -16,3 +16,6 @@ disttag = .fc30
 [f31]
 disttag = .fc31
 
+[epel8]
+disttag = .el8
+
