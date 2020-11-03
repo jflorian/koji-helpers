@@ -16,3 +16,6 @@ disttag = .el8
 [f32]
 disttag = .fc32
 
+[f33]
+disttag = .fc33
+
