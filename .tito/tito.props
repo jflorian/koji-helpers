@@ -7,9 +7,6 @@ changelog_format = %s (%ae)
 [epel7]
 disttag = .el7
 
-[f31]
-disttag = .fc31
-
 [epel8]
 disttag = .el8
 
