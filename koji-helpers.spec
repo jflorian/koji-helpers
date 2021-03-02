@@ -7,7 +7,7 @@
 %global repomgr_user repomgr
 
 Name:           koji-helpers
-Version:        1.1.0
+Version:        1.1.1
 Release:        1%{?dist}
 
 # {{{1 package meta-data
@@ -129,57 +129,30 @@ exit 0
 
 # {{{1 changelog
 %changelog
+* Tue Mar 02 2021 John Florian <jflorian@doubledog.org> 1.1.1-1
+- Drop - unnecessary dependency on repoview (jflorian@doubledog.org)
+- Change - [PyCharm] bump SDK to Python 3.8 (jflorian@doubledog.org)
+- Drop - [tito] targets for Fedora 31 (jflorian@doubledog.org)
+- New - [tito] targets for Fedora 33 (jflorian@doubledog.org)
+- Drop - [tito] targets for Fedora 30 (jflorian@doubledog.org)
+- New - [tito] targets for Fedora 32 (jflorian@doubledog.org)
+- Drop - [tito] targets for Fedora 29 (jflorian@doubledog.org)
+- New - [tito] targets for CentOS 8 (jflorian@doubledog.org)
+- New - [tito] targets for Fedora 31 (jflorian@doubledog.org)
+- Change - minor logging improvements (jflorian@doubledog.org)
+- Refactor - eliminate unnecessary param (jflorian@doubledog.org)
+- New - klean now also purges scratch builds (jflorian@doubledog.org)
+- Refactor - extract LATEST constant (jflorian@doubledog.org)
+- Drop - TODO.md (jflorian@doubledog.org)
+- New - README.md (jflorian@doubledog.org)
+- New - note about KojiCommand implicit async (jflorian@doubledog.org)
+- Change - KojiCommand to log process args for debugging
+  (jflorian@doubledog.org)
+- Bug - klean crashes if the `latest` link is missing (jflorian@doubledog.org)
+
 * Tue Jun 18 2019 John Florian <jflorian@doubledog.org> 1.1.0-1
 - Change - improve smashd/gojira responsiveness (jflorian@doubledog.org)
 - Bug - klean.service is resource greedy (jflorian@doubledog.org)
 - New - initial CHANGELOG.md (jflorian@doubledog.org)
 - Drop - [tito] targets for Fedora 28 (jflorian@doubledog.org)
 - New - TODO.md for simple task tracking (jflorian@doubledog.org)
-
-* Wed Jun 12 2019 John Florian <jflorian@doubledog.org> 1.0.0-1
-- New - klean service/timer units for systemd (jflorian@doubledog.org)
-- New - klean tool (jflorian@doubledog.org)
-- New - Configuration.smashd_koji_dir setting (jflorian@doubledog.org)
-- Drop - Masher class and its dependencies (jflorian@doubledog.org)
-- Change - wait for dist-repo task (jflorian@doubledog.org)
-- Change - improve completeness of KojiCommand docs (jflorian@doubledog.org)
-- Change - use DistRepoMaker instead of Masher (jflorian@doubledog.org)
-- Change - transform Masher into DistRepoMaker (in new module)
-  (jflorian@doubledog.org)
-- New - koji_helpers.koji.KojiDistRepo class (jflorian@doubledog.org)
-- New - koji_helpers.smashd.distrepo module (jflorian@doubledog.org)
-- Refactor - rename SignAndMashDaemon to SignAndComposeDaemon
-  (jflorian@doubledog.org)
-- Refactor - use f-string literals instead of format() (jflorian@doubledog.org)
-- Bug - regex patterns should be raw-strings (jflorian@doubledog.org)
-- Bug - Signer.__repr__() yields garbage (jflorian@doubledog.org)
-- Change - [PyCharm] bump SDK to Python 3.7 (jflorian@doubledog.org)
-- New - [tito] targets for Fedora 30 (jflorian@doubledog.org)
-
-* Sun Apr 07 2019 John Florian <jflorian@doubledog.org> 0.7.0-3
-- Change - [spec] delegate Python build to Makefile (jflorian@doubledog.org)
-- Change - [Makefile] clean __pycache__ files too (jflorian@doubledog.org)
-- Janitorial - fixup project URLs (jflorian@doubledog.org)
-- Bug - [setup] keyword sb 'requires' not 'require' (jflorian@doubledog.org)
-- Change - [Makefile] many targets are actually PHONY (jflorian@doubledog.org)
-- Janitorial - modernize spec file (jflorian@doubledog.org)
-- Change - bump for EPEL moving to Python 3.6 (jflorian@doubledog.org)
-- Drop - [tito] targets for Fedora 27 (jflorian@doubledog.org)
-
-* Fri Nov 16 2018 John Florian <jflorian@doubledog.org> 0.7.0-2
-- Bug - Fedora 29 requires newer python3-doubledog (jflorian@doubledog.org)
-- Drop - [tito] Fedora 26 release targets (jflorian@doubledog.org)
-- New - [tito] targets for Fedora 29 (jflorian@doubledog.org)
-
-* Thu Aug 16 2018 John Florian <jflorian@doubledog.org> 0.7.0-1
-- Change - let distutils install our scripts (jflorian@doubledog.org)
-- New - min_interval/max_interval for smashd in config (jflorian@doubledog.org)
-- Refactor - simplify config parsing (jflorian@doubledog.org)
-- Refactor - drop unused constants (jflorian@doubledog.org)
-- Refactor - drop unused import (jflorian@doubledog.org)
-- Janitorial - add SPDX license identifier globally (jflorian@doubledog.org)
-- Change - [PyCharm] bump SDK to Python 3.6 (jflorian@doubledog.org)
-- New - [PyCharm] encodings configuration (jflorian@doubledog.org)
-- [tito] - restructure epel targets (jflorian@doubledog.org)
-- Change - [tito] disttag for EL7 (jflorian@doubledog.org)
-- New - [tito] targets for Fedora 28 (jflorian@doubledog.org)

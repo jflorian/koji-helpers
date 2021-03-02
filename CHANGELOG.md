@@ -2,7 +2,7 @@
 This file is part of koji-helpers.
 
 SPDX-License-Identifier: GPL-3.0-or-later
-Copyright 2019 John Florian <jflorian@doubledog.org>
+Copyright 2019-2021 John Florian <jflorian@doubledog.org>
 -->
 # Change Log
 
@@ -22,16 +22,13 @@ adheres to [good change log principles](http://keepachangelog.com/).
 
 -->
 
-## [1.1.1] WIP
+## [1.1.1] 2021-03-02
 ### Added
 - `klean` now also purges older scratch-builds
 ### Changed
 - `koji_helpers.koji.KojiCommand` now logs (at the DEBUG level) the process args to be executed
-### Deprecated
-### Removed
 ### Fixed
 - `klean` crashes if the `latest` link is missing for some reason
-### Security
 
 ## [1.1.0] 2019-06-18
 ### Changed
