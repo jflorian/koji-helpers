@@ -28,6 +28,12 @@ from koji_helpers.logging import KojiHelperLoggerAdapter
 # The directory name where output of `koji dist-repo` lands.
 REPOS_DIST = 'repos-dist'
 
+# The symlink name referencing the latest dist-repo created by `koji dist-repo`.
+LATEST = 'latest'
+
+# The directory name where artifacts from `koji build --scratch` land.
+SCRATCH = 'scratch'
+
 CREATED_TASK_PATTERN = re.compile(r'Created task: *(\d+)', re.MULTILINE)
 STATE_PATTERN = re.compile(r'State: *(\S+)', re.MULTILINE)
 
@@ -43,6 +49,10 @@ class KojiCommand(object):
     while Koji itself remains stuck in Python2.  It also lends a modicum of
     API abstraction which may be beneficial given its deep ties to Koji while
     remaining an external, unassociated project.
+
+    Note that while many of Koji's commands may sport a `--no-wait` option,
+    Koji will effectively be asynchronous implicitly when run without an
+    attached tty.
 
     .. attribute:: args
 
@@ -83,6 +93,7 @@ class KojiCommand(object):
     def run(self):
         self._log.debug('starting')
         process_args = [KOJI] + self.args
+        self._log.debug(f'process_args={process_args!r}')
         try:
             self.output = check_output(process_args, stderr=STDOUT).decode()
         except CalledProcessError as e:

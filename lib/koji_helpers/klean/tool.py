@@ -23,6 +23,7 @@ from logging import getLogger
 from koji_helpers import CONFIG
 from koji_helpers.config import Configuration
 from koji_helpers.klean.distrepo import DistRepoCleaner
+from koji_helpers.klean.scratchbuild import ScratchBuildCleaner
 
 __author__ = """John Florian <jflorian@doubledog.org>"""
 __copyright__ = """2019 John Florian"""
@@ -60,6 +61,6 @@ class KleanTool(object):
 
     def run(self):
         _log.info('started')
-        # Using smashd's repo names as dist tags here.
-        DistRepoCleaner(self.config.repos, self.config)
+        DistRepoCleaner(self.config)
+        ScratchBuildCleaner(self.config)
         _log.info('finished')
