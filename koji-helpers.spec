@@ -31,7 +31,6 @@ Requires:       python%{python3_pkgversion} >= %{min_py_ver}
 Requires:       python%{python3_pkgversion}-PyYAML
 Requires:       python%{python3_pkgversion}-requests
 Requires:       python3-doubledog >= 3.0.0, python3-doubledog < 4.0.0
-Requires:       repoview
 Requires:       sigul
 Requires:       systemd
 
